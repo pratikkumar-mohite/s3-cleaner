@@ -8,13 +8,15 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
-func S3Connection(cfg aws.Config) *s3.Client {
-	client := s3.NewFromConfig(cfg)
+func S3Connection(cfg aws.Config) S3Client {
+	client := S3Client{
+		Client: s3.NewFromConfig(cfg),
+	}
 	return client
 }
 
-func getS3Buckets(c *s3.Client) []S3Bucket {
-	output, err := c.ListBuckets(context.TODO(), &s3.ListBucketsInput{})
+func (c *S3Client)getS3Buckets() []S3Bucket {
+	output, err := c.Client.ListBuckets(context.TODO(), &s3.ListBucketsInput{})
 	if err != nil {
 		panic("unable to list buckets, " + err.Error())
 	}
@@ -27,8 +29,8 @@ func getS3Buckets(c *s3.Client) []S3Bucket {
 	return buckets
 }
 
-func getS3Bucket(c *s3.Client, bucket_name string) string {
-	buckets := getS3Buckets(c)
+func (c *S3Client)getS3Bucket(bucket_name string) string {
+	buckets := c.getS3Buckets()
 	for _, bucket := range buckets {
 		if bucket.Name == bucket_name {
 			return bucket.Name
@@ -40,9 +42,9 @@ func getS3Bucket(c *s3.Client, bucket_name string) string {
 	return ""
 }
 
-func GetS3BucketObjects(c *s3.Client, bucket_name string) []S3BucketObject {
-	bucket := getS3Bucket(c, bucket_name)
-	output, err := c.ListObjectsV2(context.TODO(), &s3.ListObjectsV2Input{
+func (c *S3Client)GetS3BucketObjects(bucket_name string) []S3BucketObject {
+	bucket := c.getS3Bucket(bucket_name)
+	output, err := c.Client.ListObjectsV2(context.TODO(), &s3.ListObjectsV2Input{
 		Bucket: &bucket,
 	})
 	if err != nil {

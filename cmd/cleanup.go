@@ -9,6 +9,11 @@ import (
 func S3Cleanup() {
 	config := aws.AWSConnection(getFromEnv("AWS_PROFILE"))
 	s3Client := aws.S3Connection(config)
-	objects := aws.GetS3BucketObjects(s3Client, getFromEnv("AWS_DELETE_S3_BUCKET"))
-	fmt.Println("Objects Found: ", objects)
+	objects := s3Client.GetS3BucketObjects(getFromEnv("AWS_DELETE_S3_BUCKET"))
+	for _, object := range objects {
+		if object.Object != "" {
+			fmt.Println("Object Found: ", object.Object)
+		}
+	}
+	
 }
