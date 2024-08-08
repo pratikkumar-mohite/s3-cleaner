@@ -2,6 +2,7 @@ package aws
 
 import (
 	"context"
+	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -26,26 +27,35 @@ func getS3Buckets(c *s3.Client) []S3Bucket {
 	return buckets
 }
 
-func GetS3Bucket(c *s3.Client, bucket_name string) string {
+func getS3Bucket(c *s3.Client, bucket_name string) string {
 	buckets := getS3Buckets(c)
 	for _, bucket := range buckets {
 		if bucket.Name == bucket_name {
 			return bucket.Name
 		}
 	}
+	if bucket_name == "" {
+		panic("bucket name is empty")
+	}
 	return ""
 }
 
-func GetS3BucketObjects(c *s3.Client, bucket_name string) []string {
+func GetS3BucketObjects(c *s3.Client, bucket_name string) []S3BucketObject {
+	bucket := getS3Bucket(c, bucket_name)
 	output, err := c.ListObjectsV2(context.TODO(), &s3.ListObjectsV2Input{
-		Bucket: &bucket_name,
+		Bucket: &bucket,
 	})
 	if err != nil {
 		panic("unable to list objects, " + err.Error())
 	}
-	objects := make([]string, len(output.Contents))
+	objects := make([]S3BucketObject, len(output.Contents))
 	for index, object := range output.Contents {
-		objects[index] = aws.ToString(object.Key)
+		key := aws.ToString(object.Key)
+		if !strings.HasSuffix(key, "/") {
+			objects[index] = S3BucketObject{
+				Object: key,
+			}
+		}
 	}
 	return objects
 }
