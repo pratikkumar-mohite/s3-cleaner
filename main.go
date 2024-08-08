@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/pratikkumar-mohite/s3-cleanup/cmd"
+	"github.com/pratikkumar-mohite/s3-cleanup/cmd/s3-cleanup"
 )
 
 func main() {
