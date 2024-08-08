@@ -15,4 +15,6 @@ func S3Cleanup() {
 		return
 	}
 	fmt.Println("Bucket Found: ", bucket)
+	objects := aws.GetS3BucketObjects(s3Client, bucket)
+	fmt.Println("Objects Found: ", objects)
 }
