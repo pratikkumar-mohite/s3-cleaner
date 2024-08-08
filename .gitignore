@@ -23,3 +23,9 @@ go.work.sum
 
 # env file
 .env
+
+# results
+*.txt
+
+# binary file
+/s3-cleanup
