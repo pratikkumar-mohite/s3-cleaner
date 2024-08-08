@@ -15,5 +15,4 @@ func S3Cleanup() {
 			fmt.Println("Object Found: ", object.Object)
 		}
 	}
-	
 }
