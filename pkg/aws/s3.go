@@ -35,3 +35,17 @@ func GetS3Bucket(c *s3.Client, bucket_name string) string {
 	}
 	return ""
 }
+
+func GetS3BucketObjects(c *s3.Client, bucket_name string) []string {
+	output, err := c.ListObjectsV2(context.TODO(), &s3.ListObjectsV2Input{
+		Bucket: &bucket_name,
+	})
+	if err != nil {
+		panic("unable to list objects, " + err.Error())
+	}
+	objects := make([]string, len(output.Contents))
+	for index, object := range output.Contents {
+		objects[index] = aws.ToString(object.Key)
+	}
+	return objects
+}
