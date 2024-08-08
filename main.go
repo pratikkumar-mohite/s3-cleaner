@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"github.com/pratikkumar-mohite/s3-cleanup/cmd"
+)
 
 func main() {
-	fmt.Println("Hello, World!")
+	cmd.S3Cleanup()
 }
