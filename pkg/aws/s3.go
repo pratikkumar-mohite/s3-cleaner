@@ -1,6 +1,7 @@
 package aws
 
 import (
+	"fmt"
 	"context"
 	"strings"
 
@@ -33,13 +34,50 @@ func (c *S3Client)getS3Bucket(bucket_name string) string {
 	buckets := c.getS3Buckets()
 	for _, bucket := range buckets {
 		if bucket.Name == bucket_name {
-			return bucket.Name
+			return bucket_name
 		}
 	}
 	if bucket_name == "" {
 		panic("bucket name is empty")
 	}
 	return ""
+}
+
+func (c *S3Client)checkVersioning(bucket string) string {
+	input := &s3.GetBucketVersioningInput{
+		Bucket: aws.String(bucket),
+	}
+
+	result, err := c.Client.GetBucketVersioning(context.TODO(), input)
+	if err != nil {
+		panic("failed to get bucket versioning, " + err.Error())
+	}
+
+	return string(result.Status)
+}
+
+func (c *S3Client)listObjectVersions(bucket *string) {
+	input := &s3.ListObjectVersionsInput{
+		Bucket: aws.String(*bucket),
+	}
+
+	paginator := s3.NewListObjectVersionsPaginator(c.Client, input)
+
+	for paginator.HasMorePages() {
+		page, err := paginator.NextPage(context.TODO())
+		if err != nil {
+			fmt.Printf("failed to get page, %v", err)
+		}
+
+		for _, version := range page.Versions {
+			if *version.Key != "" {
+				fmt.Printf("Object: %s, Version ID: %s\n", *version.Key, *version.VersionId)
+			}
+		}
+		for _, marker := range page.DeleteMarkers {
+			fmt.Printf("Delete Marker Object: %s, Version ID: %s\n", *marker.Key, *marker.VersionId)
+		}
+	}
 }
 
 func (c *S3Client)GetS3BucketObjects(bucket_name string) []S3BucketObject {
@@ -49,6 +87,9 @@ func (c *S3Client)GetS3BucketObjects(bucket_name string) []S3BucketObject {
 	})
 	if err != nil {
 		panic("unable to list objects, " + err.Error())
+	}
+	if c.checkVersioning(bucket) == "Enabled" {
+		c.listObjectVersions(&bucket)
 	}
 	objects := make([]S3BucketObject, len(output.Contents))
 	for index, object := range output.Contents {
