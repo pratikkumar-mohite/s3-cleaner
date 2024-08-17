@@ -12,7 +12,7 @@ func S3Cleanup() {
 	objects := s3Client.GetS3BucketObjects(getFromEnv("AWS_DELETE_S3_BUCKET"))
 	for _, object := range objects {
 		if object.Object != "" {
-			fmt.Println("Object Found: ", object.Object)
+			fmt.Println("Object: ", object.Object)
 		}
 	}
 }

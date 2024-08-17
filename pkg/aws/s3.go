@@ -30,17 +30,17 @@ func (c *S3Client)getS3Buckets() []S3Bucket {
 	return buckets
 }
 
-func (c *S3Client)getS3Bucket(bucket_name string) *S3BucketOptions {
+func (c *S3Client)getS3Bucket(bucket_name string) string {
 	buckets := c.getS3Buckets()
 	for _, bucket := range buckets {
 		if bucket.Name == bucket_name {
-			return &S3BucketOptions{Name: bucket.Name, Versioning:  "Enabled"}
+			return bucket_name
 		}
 	}
 	if bucket_name == "" {
 		panic("bucket name is empty")
 	}
-	return &S3BucketOptions{Name: "", Versioning:  ""}
+	return ""
 }
 
 func (c *S3Client)checkVersioning(bucket string) string {
@@ -83,13 +83,13 @@ func (c *S3Client)listObjectVersions(bucket *string) {
 func (c *S3Client)GetS3BucketObjects(bucket_name string) []S3BucketObject {
 	bucket := c.getS3Bucket(bucket_name)
 	output, err := c.Client.ListObjectsV2(context.TODO(), &s3.ListObjectsV2Input{
-		Bucket: &bucket.Name,
+		Bucket: &bucket,
 	})
 	if err != nil {
 		panic("unable to list objects, " + err.Error())
 	}
-	if c.checkVersioning(bucket.Name) == "Enabled" {
-		c.listObjectVersions(&bucket.Name)
+	if c.checkVersioning(bucket) == "Enabled" {
+		c.listObjectVersions(&bucket)
 	}
 	objects := make([]S3BucketObject, len(output.Contents))
 	for index, object := range output.Contents {

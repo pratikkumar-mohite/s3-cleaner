@@ -13,8 +13,3 @@ type S3Bucket struct {
 type S3BucketObject struct {
 	Object string
 }
-
-type S3BucketOptions struct {
-	Name string
-	Versioning string
-}
