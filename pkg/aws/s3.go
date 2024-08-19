@@ -1,8 +1,8 @@
 package aws
 
 import (
-	"fmt"
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -16,7 +16,7 @@ func S3Connection(cfg aws.Config) S3Client {
 	return client
 }
 
-func (c *S3Client)getS3Buckets() []S3Bucket {
+func (c *S3Client) getS3Buckets() []S3Bucket {
 	output, err := c.Client.ListBuckets(context.TODO(), &s3.ListBucketsInput{})
 	if err != nil {
 		panic("unable to list buckets, " + err.Error())
@@ -30,7 +30,7 @@ func (c *S3Client)getS3Buckets() []S3Bucket {
 	return buckets
 }
 
-func (c *S3Client)getS3Bucket(bucket_name string) string {
+func (c *S3Client) getS3Bucket(bucket_name string) string {
 	buckets := c.getS3Buckets()
 	for _, bucket := range buckets {
 		if bucket.Name == bucket_name {
@@ -43,7 +43,7 @@ func (c *S3Client)getS3Bucket(bucket_name string) string {
 	return ""
 }
 
-func (c *S3Client)checkVersioning(bucket string) string {
+func (c *S3Client) checkVersioning(bucket string) string {
 	input := &s3.GetBucketVersioningInput{
 		Bucket: aws.String(bucket),
 	}
@@ -56,7 +56,7 @@ func (c *S3Client)checkVersioning(bucket string) string {
 	return string(result.Status)
 }
 
-func (c *S3Client)listObjectVersions(bucket *string) []S3BucketObject{
+func (c *S3Client) listObjectVersions(bucket *string) []S3BucketObject {
 	var objects []S3BucketObject
 	var objectsMap = make(map[string]*S3BucketObject)
 	input := &s3.ListObjectVersionsInput{
@@ -70,11 +70,10 @@ func (c *S3Client)listObjectVersions(bucket *string) []S3BucketObject{
 		if err != nil {
 			fmt.Printf("failed to get page, %v", err)
 		}
-		
-		
+
 		for _, version := range page.Versions {
 			if _, exists := objectsMap[*version.Key]; !exists {
-				objectsMap[*version.Key] = &S3BucketObject{ ObjectName: *version.Key}
+				objectsMap[*version.Key] = &S3BucketObject{ObjectName: *version.Key}
 			}
 
 			objectsMap[*version.Key].ObjectVersion = append(objectsMap[*version.Key].ObjectVersion, *version.VersionId)
@@ -82,7 +81,7 @@ func (c *S3Client)listObjectVersions(bucket *string) []S3BucketObject{
 
 		for _, deleteMarker := range page.DeleteMarkers {
 			if _, exists := objectsMap[*deleteMarker.Key]; !exists {
-				objectsMap[*deleteMarker.Key] = &S3BucketObject{ ObjectName: *deleteMarker.Key}
+				objectsMap[*deleteMarker.Key] = &S3BucketObject{ObjectName: *deleteMarker.Key}
 			}
 
 			objectsMap[*deleteMarker.Key].ObjectDeleteMarker = *deleteMarker.VersionId
@@ -95,7 +94,7 @@ func (c *S3Client)listObjectVersions(bucket *string) []S3BucketObject{
 	return objects
 }
 
-func (c *S3Client)GetS3BucketObjects(bucket_name string) []S3BucketObject {
+func (c *S3Client) GetS3BucketObjects(bucket_name string) []S3BucketObject {
 	bucket := c.getS3Bucket(bucket_name)
 	output, err := c.Client.ListObjectsV2(context.TODO(), &s3.ListObjectsV2Input{
 		Bucket: &bucket,
