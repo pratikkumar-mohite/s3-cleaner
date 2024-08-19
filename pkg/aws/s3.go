@@ -56,7 +56,9 @@ func (c *S3Client)checkVersioning(bucket string) string {
 	return string(result.Status)
 }
 
-func (c *S3Client)listObjectVersions(bucket *string) {
+func (c *S3Client)listObjectVersions(bucket *string) []S3BucketObject{
+	var objects []S3BucketObject
+	var objectsMap = make(map[string]*S3BucketObject)
 	input := &s3.ListObjectVersionsInput{
 		Bucket: aws.String(*bucket),
 	}
@@ -68,16 +70,29 @@ func (c *S3Client)listObjectVersions(bucket *string) {
 		if err != nil {
 			fmt.Printf("failed to get page, %v", err)
 		}
-
+		
+		
 		for _, version := range page.Versions {
-			if *version.Key != "" {
-				fmt.Printf("Object: %s, Version ID: %s\n", *version.Key, *version.VersionId)
+			if _, exists := objectsMap[*version.Key]; !exists {
+				objectsMap[*version.Key] = &S3BucketObject{ ObjectName: *version.Key}
 			}
+
+			objectsMap[*version.Key].ObjectVersion = append(objectsMap[*version.Key].ObjectVersion, *version.VersionId)
 		}
-		for _, marker := range page.DeleteMarkers {
-			fmt.Printf("Delete Marker Object: %s, Version ID: %s\n", *marker.Key, *marker.VersionId)
+
+		for _, deleteMarker := range page.DeleteMarkers {
+			if _, exists := objectsMap[*deleteMarker.Key]; !exists {
+				objectsMap[*deleteMarker.Key] = &S3BucketObject{ ObjectName: *deleteMarker.Key}
+			}
+
+			objectsMap[*deleteMarker.Key].ObjectDeleteMarker = *deleteMarker.VersionId
 		}
 	}
+	for _, object := range objectsMap {
+		objects = append(objects, *object)
+	}
+
+	return objects
 }
 
 func (c *S3Client)GetS3BucketObjects(bucket_name string) []S3BucketObject {
@@ -88,15 +103,15 @@ func (c *S3Client)GetS3BucketObjects(bucket_name string) []S3BucketObject {
 	if err != nil {
 		panic("unable to list objects, " + err.Error())
 	}
-	if c.checkVersioning(bucket) == "Enabled" {
-		c.listObjectVersions(&bucket)
-	}
 	objects := make([]S3BucketObject, len(output.Contents))
+	if c.checkVersioning(bucket) == "Enabled" {
+		return c.listObjectVersions(&bucket)
+	}
 	for index, object := range output.Contents {
 		key := aws.ToString(object.Key)
 		if !strings.HasSuffix(key, "/") {
 			objects[index] = S3BucketObject{
-				Object: key,
+				ObjectName: key,
 			}
 		}
 	}
