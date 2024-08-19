@@ -6,13 +6,25 @@ import (
 	"github.com/pratikkumar-mohite/s3-cleanup/pkg/aws"
 )
 
-func S3Cleanup() {
+func setup() aws.S3Client {
 	config := aws.AWSConnection(getFromEnv("AWS_PROFILE"))
-	s3Client := aws.S3Connection(config)
-	objects := s3Client.GetS3BucketObjects(getFromEnv("AWS_DELETE_S3_BUCKET"))
+	return aws.S3Connection(config)
+}
+
+func S3Cleanup() {
+	s3Client := setup()
+	bucket := getFromEnv("AWS_DELETE_S3_BUCKET")
+	objects := s3Client.GetS3BucketObjects(bucket)
 	for _, object := range objects {
 		if object.ObjectName != "" {
-			fmt.Printf("Object: %v\n", object)
+			if object.ObjectDeleteMarker != "" {
+				s3Client.DeleteS3BucketObjectVersion(bucket, object.ObjectName, object.ObjectDeleteMarker)
+			}
+
+			for _, version := range object.ObjectVersion {
+				s3Client.DeleteS3BucketObjectVersion(bucket, object.ObjectName, version)
+			}
+			fmt.Printf("Delete Object: %v\n", object.ObjectName)
 		}
 	}
 }

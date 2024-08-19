@@ -6,9 +6,9 @@ import (
 )
 
 func getFromEnv(env string) string {
-	home := os.Getenv(env)
-	if home == "" {
+	variable := os.Getenv(env)
+	if variable == "" {
 		panic(fmt.Sprintf("Environment variable %s is not set", env))
 	}
-	return home
+	return variable
 }
