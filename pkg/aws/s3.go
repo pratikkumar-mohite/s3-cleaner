@@ -116,3 +116,15 @@ func (c *S3Client) GetS3BucketObjects(bucket_name string) []S3BucketObject {
 	}
 	return objects
 }
+
+func (c *S3Client) DeleteS3BucketObjectVersion(bucket_name string, object_name string, version_id string) {
+	bucket := c.getS3Bucket(bucket_name)
+	_, err := c.Client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
+		Bucket:    &bucket,
+		Key:       &object_name,
+		VersionId: &version_id,
+	})
+	if err != nil {
+		panic("unable to delete object version, " + err.Error())
+	}
+}
