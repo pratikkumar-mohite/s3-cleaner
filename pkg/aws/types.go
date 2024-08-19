@@ -11,5 +11,7 @@ type S3Bucket struct {
 }
 
 type S3BucketObject struct {
-	Object string
+	ObjectName         string
+	ObjectVersion      []string
+	ObjectDeleteMarker string
 }

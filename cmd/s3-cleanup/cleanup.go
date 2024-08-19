@@ -11,8 +11,8 @@ func S3Cleanup() {
 	s3Client := aws.S3Connection(config)
 	objects := s3Client.GetS3BucketObjects(getFromEnv("AWS_DELETE_S3_BUCKET"))
 	for _, object := range objects {
-		if object.Object != "" {
-			fmt.Println("Object: ", object.Object)
+		if object.ObjectName != "" {
+			fmt.Printf("Object: %v\n", object)
 		}
 	}
 }
