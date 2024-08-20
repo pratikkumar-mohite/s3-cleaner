@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"time"
+	"sync"
 
 	"github.com/pratikkumar-mohite/s3-cleanup/pkg/aws"
 )
@@ -22,18 +23,38 @@ func S3Cleanup() {
 	startTime := time.Now()
 
 	objects := s3Client.GetS3BucketObjects()
-	for _, object := range objects {
-		if object.ObjectName != "" {
-			if object.ObjectDeleteMarker != "" {
-				s3Client.DeleteS3BucketObjectVersion(object.ObjectName, object.ObjectDeleteMarker)
-			}
+	var wg sync.WaitGroup
+	objectChan := make(chan aws.S3BucketObject)
 
-			for _, version := range object.ObjectVersion {
-				s3Client.DeleteS3BucketObjectVersion(object.ObjectName, version)
+	go func() {
+		for object := range objectChan {
+			if object.ObjectName != "" {
+				if object.ObjectDeleteMarker != "" {
+					s3Client.DeleteS3BucketObjectVersion(object.ObjectName, object.ObjectDeleteMarker)
+				}
+
+				var versionWG sync.WaitGroup
+				for _, version := range object.ObjectVersion {
+					versionWG.Add(1)
+					go func(version string){
+						defer versionWG.Done()
+						s3Client.DeleteS3BucketObjectVersion(object.ObjectName, version)
+					}(version)
+				}
+				versionWG.Wait()
+				fmt.Printf("Delete Object: %v\n", object.ObjectName)
 			}
-			fmt.Printf("Delete Object: %v\n", object.ObjectName)
+			wg.Done()
 		}
+	}()
+
+	for _, object := range objects{
+		wg.Add(1)
+		objectChan <- object
 	}
+
+	close(objectChan)
+	wg.Wait()
 
 	elapsedTime := time.Since(startTime)
 	fmt.Println("Total time taken for object deletion: ", elapsedTime)
