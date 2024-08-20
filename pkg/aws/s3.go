@@ -10,13 +10,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
-func S3Connection(cfg aws.Config) S3Client {
-	client := S3Client{
-		Client: s3.NewFromConfig(cfg),
-	}
-	return client
-}
-
 func (c *S3Client) getS3Buckets() []S3Bucket {
 	output, err := c.Client.ListBuckets(context.TODO(), &s3.ListBucketsInput{})
 	if err != nil {
