@@ -36,5 +36,5 @@ func S3Cleanup() {
 	}
 
 	elapsedTime := time.Since(startTime)
-	fmt.Println("Total time taken for execution: ", elapsedTime)
+	fmt.Println("Total time taken for object deletion: ", elapsedTime)
 }
