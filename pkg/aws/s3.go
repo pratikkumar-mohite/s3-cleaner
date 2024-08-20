@@ -3,6 +3,7 @@ package aws
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -127,4 +128,26 @@ func (c *S3Client) DeleteS3BucketObjectVersion(bucket_name string, object_name s
 	if err != nil {
 		panic("unable to delete object version, " + err.Error())
 	}
+}
+
+func (c *S3Client) UploadS3BucketObjects(bucket_name string, object_file_path string) {
+	file, err := os.Open(object_file_path)
+	if err != nil {
+		panic("Error opening file:" + err.Error())
+	}
+	defer file.Close()
+
+	key := strings.Split(object_file_path, "/")[2]
+
+	_, err = c.Client.PutObject(context.TODO(), &s3.PutObjectInput{
+		Bucket: aws.String(bucket_name),
+		Key:    aws.String(key),
+		Body:   file,
+	})
+
+	if err != nil {
+		panic("Error uploading file:" + err.Error())
+	}
+
+	fmt.Printf("File %s uploaded successfully\n", key)
 }

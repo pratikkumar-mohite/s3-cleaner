@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/pratikkumar-mohite/s3-cleanup/pkg/aws"
 )
@@ -14,6 +15,11 @@ func setup() aws.S3Client {
 func S3Cleanup() {
 	s3Client := setup()
 	bucket := getFromEnv("AWS_DELETE_S3_BUCKET")
+	s3Client.UploadS3BucketObjects(bucket,"test/files/file1.txt")
+	s3Client.UploadS3BucketObjects(bucket,"test/files/file2.txt")
+
+	startTime := time.Now()
+
 	objects := s3Client.GetS3BucketObjects(bucket)
 	for _, object := range objects {
 		if object.ObjectName != "" {
@@ -27,4 +33,7 @@ func S3Cleanup() {
 			fmt.Printf("Delete Object: %v\n", object.ObjectName)
 		}
 	}
+
+	elapsedTime := time.Since(startTime)
+	fmt.Println("Total time taken for execution: ", elapsedTime)
 }
