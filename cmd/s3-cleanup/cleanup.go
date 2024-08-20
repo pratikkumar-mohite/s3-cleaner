@@ -16,8 +16,11 @@ func setup() aws.S3Client {
 
 func S3Cleanup() {
 	s3Client := setup()
+	object1 := s3Client.UploadS3BucketObjects("test/files/file1.txt")
+	s3Client.UploadS3BucketObjects("test/files/file2.txt")
 	s3Client.UploadS3BucketObjects("test/files/file1.txt")
 	s3Client.UploadS3BucketObjects("test/files/file2.txt")
+	s3Client.DeleteS3BucketObjectVersion("file1.txt", object1)
 
 	startTime := time.Now()
 
@@ -31,7 +34,7 @@ func S3Cleanup() {
 			for _, version := range object.ObjectVersion {
 				s3Client.DeleteS3BucketObjectVersion(object.ObjectName, version)
 			}
-			fmt.Printf("Delete Object: %v\n", object.ObjectName)
+			fmt.Printf("Deleted Object: %v\n", object.ObjectName)
 		}
 	}
 
