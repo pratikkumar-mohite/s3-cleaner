@@ -26,7 +26,7 @@ func (c *S3Client) getS3Bucket(bucket_name string) string {
 	return ""
 }
 
-func (c *S3Client) checkVersioning(bucket string) string {
+func (c *S3Client) checkVersioningStatus(bucket string) string {
 	input := &s3.GetBucketVersioningInput{
 		Bucket: aws.String(bucket),
 	}
@@ -86,7 +86,7 @@ func (c *S3Client) GetS3BucketObjects() []S3BucketObject {
 		panic("unable to list objects, " + err.Error())
 	}
 	objects := make([]S3BucketObject, len(output.Contents))
-	if c.checkVersioning(bucket) == "Enabled" {
+	if c.checkVersioningStatus(bucket) == "Enabled" {
 		return c.listObjectVersions(&bucket)
 	}
 	for index, object := range output.Contents {
