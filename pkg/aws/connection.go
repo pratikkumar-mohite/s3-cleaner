@@ -5,6 +5,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
 func AWSConnection(profile string) aws.Config {
@@ -13,4 +14,11 @@ func AWSConnection(profile string) aws.Config {
 		panic("unable to load SDK config, " + err.Error())
 	}
 	return cfg
+}
+
+func S3Connection(cfg aws.Config) S3Client {
+	client := S3Client{
+		Client: s3.NewFromConfig(cfg),
+	}
+	return client
 }

@@ -10,31 +10,13 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
-func S3Connection(cfg aws.Config) S3Client {
-	client := S3Client{
-		Client: s3.NewFromConfig(cfg),
-	}
-	return client
-}
-
-func (c *S3Client) getS3Buckets() []S3Bucket {
+func (c *S3Client) getS3Bucket(bucket_name string) string {
 	output, err := c.Client.ListBuckets(context.TODO(), &s3.ListBucketsInput{})
 	if err != nil {
 		panic("unable to list buckets, " + err.Error())
 	}
-	buckets := make([]S3Bucket, len(output.Buckets))
-	for index, object := range output.Buckets {
-		buckets[index] = S3Bucket{
-			Name: aws.ToString(object.Name),
-		}
-	}
-	return buckets
-}
-
-func (c *S3Client) getS3Bucket(bucket_name string) string {
-	buckets := c.getS3Buckets()
-	for _, bucket := range buckets {
-		if bucket.Name == bucket_name {
+	for _, bucket := range output.Buckets {
+		if aws.ToString(bucket.Name) == bucket_name {
 			return bucket_name
 		}
 	}
@@ -44,7 +26,7 @@ func (c *S3Client) getS3Bucket(bucket_name string) string {
 	return ""
 }
 
-func (c *S3Client) checkVersioning(bucket string) string {
+func (c *S3Client) checkVersioningStatus(bucket string) string {
 	input := &s3.GetBucketVersioningInput{
 		Bucket: aws.String(bucket),
 	}
@@ -95,8 +77,8 @@ func (c *S3Client) listObjectVersions(bucket *string) []S3BucketObject {
 	return objects
 }
 
-func (c *S3Client) GetS3BucketObjects(bucket_name string) []S3BucketObject {
-	bucket := c.getS3Bucket(bucket_name)
+func (c *S3Client) GetS3BucketObjects() []S3BucketObject {
+	bucket := c.getS3Bucket(c.Bucket)
 	output, err := c.Client.ListObjectsV2(context.TODO(), &s3.ListObjectsV2Input{
 		Bucket: &bucket,
 	})
@@ -104,7 +86,7 @@ func (c *S3Client) GetS3BucketObjects(bucket_name string) []S3BucketObject {
 		panic("unable to list objects, " + err.Error())
 	}
 	objects := make([]S3BucketObject, len(output.Contents))
-	if c.checkVersioning(bucket) == "Enabled" {
+	if c.checkVersioningStatus(bucket) == "Enabled" {
 		return c.listObjectVersions(&bucket)
 	}
 	for index, object := range output.Contents {
@@ -118,10 +100,9 @@ func (c *S3Client) GetS3BucketObjects(bucket_name string) []S3BucketObject {
 	return objects
 }
 
-func (c *S3Client) DeleteS3BucketObjectVersion(bucket_name string, object_name string, version_id string) {
-	bucket := c.getS3Bucket(bucket_name)
+func (c *S3Client) DeleteS3BucketObjectVersion(object_name string, version_id string) {
 	_, err := c.Client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
-		Bucket:    &bucket,
+		Bucket:    &c.Bucket,
 		Key:       &object_name,
 		VersionId: &version_id,
 	})
@@ -130,7 +111,7 @@ func (c *S3Client) DeleteS3BucketObjectVersion(bucket_name string, object_name s
 	}
 }
 
-func (c *S3Client) UploadS3BucketObjects(bucket_name string, object_file_path string) {
+func (c *S3Client) UploadS3BucketObjects(object_file_path string) {
 	file, err := os.Open(object_file_path)
 	if err != nil {
 		panic("Error opening file:" + err.Error())
@@ -140,7 +121,7 @@ func (c *S3Client) UploadS3BucketObjects(bucket_name string, object_file_path st
 	key := strings.Split(object_file_path, "/")[2]
 
 	_, err = c.Client.PutObject(context.TODO(), &s3.PutObjectInput{
-		Bucket: aws.String(bucket_name),
+		Bucket: aws.String(c.Bucket),
 		Key:    aws.String(key),
 		Body:   file,
 	})
