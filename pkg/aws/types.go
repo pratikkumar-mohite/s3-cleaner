@@ -7,10 +7,6 @@ type S3Client struct {
 	Bucket string
 }
 
-type S3Bucket struct {
-	Name string
-}
-
 type S3BucketObject struct {
 	ObjectName         string
 	ObjectVersion      []string

@@ -10,24 +10,13 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
-func (c *S3Client) getS3Buckets() []S3Bucket {
+func (c *S3Client) getS3Bucket(bucket_name string) string {
 	output, err := c.Client.ListBuckets(context.TODO(), &s3.ListBucketsInput{})
 	if err != nil {
 		panic("unable to list buckets, " + err.Error())
 	}
-	buckets := make([]S3Bucket, len(output.Buckets))
-	for index, object := range output.Buckets {
-		buckets[index] = S3Bucket{
-			Name: aws.ToString(object.Name),
-		}
-	}
-	return buckets
-}
-
-func (c *S3Client) getS3Bucket(bucket_name string) string {
-	buckets := c.getS3Buckets()
-	for _, bucket := range buckets {
-		if bucket.Name == bucket_name {
+	for _, bucket := range output.Buckets {
+		if aws.ToString(bucket.Name) == bucket_name {
 			return bucket_name
 		}
 	}
