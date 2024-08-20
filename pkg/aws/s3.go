@@ -95,8 +95,8 @@ func (c *S3Client) listObjectVersions(bucket *string) []S3BucketObject {
 	return objects
 }
 
-func (c *S3Client) GetS3BucketObjects(bucket_name string) []S3BucketObject {
-	bucket := c.getS3Bucket(bucket_name)
+func (c *S3Client) GetS3BucketObjects() []S3BucketObject {
+	bucket := c.getS3Bucket(c.Bucket)
 	output, err := c.Client.ListObjectsV2(context.TODO(), &s3.ListObjectsV2Input{
 		Bucket: &bucket,
 	})
@@ -118,10 +118,9 @@ func (c *S3Client) GetS3BucketObjects(bucket_name string) []S3BucketObject {
 	return objects
 }
 
-func (c *S3Client) DeleteS3BucketObjectVersion(bucket_name string, object_name string, version_id string) {
-	bucket := c.getS3Bucket(bucket_name)
+func (c *S3Client) DeleteS3BucketObjectVersion(object_name string, version_id string) {
 	_, err := c.Client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
-		Bucket:    &bucket,
+		Bucket:    &c.Bucket,
 		Key:       &object_name,
 		VersionId: &version_id,
 	})
@@ -130,7 +129,7 @@ func (c *S3Client) DeleteS3BucketObjectVersion(bucket_name string, object_name s
 	}
 }
 
-func (c *S3Client) UploadS3BucketObjects(bucket_name string, object_file_path string) {
+func (c *S3Client) UploadS3BucketObjects(object_file_path string) {
 	file, err := os.Open(object_file_path)
 	if err != nil {
 		panic("Error opening file:" + err.Error())
@@ -140,7 +139,7 @@ func (c *S3Client) UploadS3BucketObjects(bucket_name string, object_file_path st
 	key := strings.Split(object_file_path, "/")[2]
 
 	_, err = c.Client.PutObject(context.TODO(), &s3.PutObjectInput{
-		Bucket: aws.String(bucket_name),
+		Bucket: aws.String(c.Bucket),
 		Key:    aws.String(key),
 		Body:   file,
 	})

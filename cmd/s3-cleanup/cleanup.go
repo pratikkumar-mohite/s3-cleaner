@@ -9,26 +9,27 @@ import (
 
 func setup() aws.S3Client {
 	config := aws.AWSConnection(getFromEnv("AWS_PROFILE"))
-	return aws.S3Connection(config)
+	client := aws.S3Connection(config)
+	client.Bucket = getFromEnv("AWS_DELETE_S3_BUCKET")
+	return client
 }
 
 func S3Cleanup() {
 	s3Client := setup()
-	bucket := getFromEnv("AWS_DELETE_S3_BUCKET")
-	s3Client.UploadS3BucketObjects(bucket,"test/files/file1.txt")
-	s3Client.UploadS3BucketObjects(bucket,"test/files/file2.txt")
+	s3Client.UploadS3BucketObjects("test/files/file1.txt")
+	s3Client.UploadS3BucketObjects("test/files/file2.txt")
 
 	startTime := time.Now()
 
-	objects := s3Client.GetS3BucketObjects(bucket)
+	objects := s3Client.GetS3BucketObjects()
 	for _, object := range objects {
 		if object.ObjectName != "" {
 			if object.ObjectDeleteMarker != "" {
-				s3Client.DeleteS3BucketObjectVersion(bucket, object.ObjectName, object.ObjectDeleteMarker)
+				s3Client.DeleteS3BucketObjectVersion(object.ObjectName, object.ObjectDeleteMarker)
 			}
 
 			for _, version := range object.ObjectVersion {
-				s3Client.DeleteS3BucketObjectVersion(bucket, object.ObjectName, version)
+				s3Client.DeleteS3BucketObjectVersion(object.ObjectName, version)
 			}
 			fmt.Printf("Delete Object: %v\n", object.ObjectName)
 		}

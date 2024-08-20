@@ -4,6 +4,7 @@ import "github.com/aws/aws-sdk-go-v2/service/s3"
 
 type S3Client struct {
 	Client *s3.Client
+	Bucket string
 }
 
 type S3Bucket struct {
