@@ -48,5 +48,3 @@ jobs:
         new_tag=${{ steps.increment_version.outputs.new_tag }}
         git tag -a $new_tag -m "Release $new_tag"
         git push origin $new_tag
-      with:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TAG_PUSH_TOKEN }}
