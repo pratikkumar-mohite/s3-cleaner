@@ -11,7 +11,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Get the latest tag
       id: get_latest_tag
@@ -20,7 +20,7 @@ jobs:
         if [ -z "$latest_tag" ]; then
           latest_tag="v1.0.0"
         fi
-        echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
+        echo "$latest_tag" >> $GITHUB_OUTPUT
 
     - name: Increment version
       id: increment_version
@@ -31,7 +31,7 @@ jobs:
         minor=${version_parts[1]}
         patch=${version_parts[2]}
         new_patch=$((patch + 1))
-        new_tag="v$major.$minor.$new_patch"
+        new_tag="$major.$minor.$new_patch"
         echo "$new_tag" >> $GITHUB_OUTPUT
 
     - name: Create and push new tag
