@@ -37,7 +37,7 @@ jobs:
         patch=${version_parts[2]}
         new_patch=$((patch + 1))
         new_tag="$major.$minor.$new_patch"
-        echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
+        echo "new_tag=$new_tag" >> $GITHUB_OUTPUT 
 
     - name: Create and push new tag
       # env:
