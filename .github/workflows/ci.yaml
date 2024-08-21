@@ -9,7 +9,7 @@ jobs:
   update-tag:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
 
     steps:
     - name: Checkout repository
@@ -48,3 +48,5 @@ jobs:
         new_tag=${{ steps.increment_version.outputs.new_tag }}
         git tag -a $new_tag -m "Release $new_tag"
         git push origin $new_tag
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TAG_PUSH_TOKEN }}
