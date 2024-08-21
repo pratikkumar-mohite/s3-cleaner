@@ -22,7 +22,7 @@ jobs:
         fi
         echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
 
-    - name: Increment patch version
+    - name: Increment version
       id: increment_version
       run: |
         latest_tag=${{ steps.get_latest_tag.outputs.latest_tag }}
