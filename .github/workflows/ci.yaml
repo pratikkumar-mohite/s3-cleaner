@@ -24,9 +24,6 @@ jobs:
       id: get_latest_tag
       run: |
         latest_tag=$(git describe --tags `git rev-list --tags --max-count=1` 2>/dev/null || echo "")
-        if [ -z "$latest_tag" ]; then
-          latest_tag="1.0.0" 
-        fi
         echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
 
     - name: Increment version
