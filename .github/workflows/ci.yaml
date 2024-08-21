@@ -1,4 +1,4 @@
-name: Update Tag on Push to Master
+name: CI
 
 on:
   push:
