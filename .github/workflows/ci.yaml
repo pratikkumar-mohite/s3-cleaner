@@ -18,7 +18,7 @@ jobs:
       run: |
         latest_tag=$(git describe --tags `git rev-list --tags --max-count=1` 2>/dev/null || echo "")
         if [ -z "$latest_tag" ]; then
-          latest_tag="v1.0.0" 
+          latest_tag="1.0.0" 
         fi
         echo "$latest_tag" >> $GITHUB_OUTPUT
 
