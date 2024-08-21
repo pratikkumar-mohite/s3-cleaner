@@ -13,6 +13,11 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: Configure Git
+      run: |
+        git config user.name "Pratikkumar Mohite"
+        git config user.email "mohite770.pm@gmail.com"
+    
     - name: Get the latest tag
       id: get_latest_tag
       run: |
@@ -35,8 +40,8 @@ jobs:
         echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
 
     - name: Create and push new tag
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TAG_PUSH_TOKEN }}
+      # env:
+      #   GITHUB_TOKEN: ${{ secrets.GITHUB_TAG_PUSH_TOKEN }}
       run: |
         new_tag=${{ steps.increment_version.outputs.new_tag }}
         git tag -a $new_tag -m "Release $new_tag"
