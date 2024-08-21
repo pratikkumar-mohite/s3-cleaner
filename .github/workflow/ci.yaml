@@ -3,7 +3,7 @@ name: Update Tag on Push to Master
 on:
   push:
     branches:
-      - "pm/issue-10"
+      - master
 
 jobs:
   update-tag:
