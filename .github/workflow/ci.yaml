@@ -1,0 +1,45 @@
+name: Update Tag on Push to Master
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  update-tag:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Get the latest tag
+      id: get_latest_tag
+      run: |
+        latest_tag=$(git describe --tags `git rev-list --tags --max-count=1` 2>/dev/null || echo "")
+        if [ -z "$latest_tag" ]; then
+          latest_tag="1.0.0"
+        fi
+        echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
+
+    - name: Increment patch version
+      id: increment_version
+      run: |
+        latest_tag=${{ steps.get_latest_tag.outputs.latest_tag }}
+        IFS='.' read -r -a version_parts <<< "$latest_tag"
+        major=${version_parts[0]}
+        minor=${version_parts[1]}
+        patch=${version_parts[2]}
+        new_patch=$((patch + 1))
+        new_tag="$major.$minor.$new_patch"
+        echo "$new_tag" >> $GITHUB_OUTPUT
+
+    - name: Create and push new tag
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TAG_PUSH_TOKEN }}
+      run: |
+        new_tag=${{ steps.increment_version.outputs.new_tag }}
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git tag $new_tag
+        git push origin $new_tag
