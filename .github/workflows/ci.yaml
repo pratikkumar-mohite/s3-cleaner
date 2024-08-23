@@ -8,38 +8,41 @@ on:
 jobs:
   update-tag:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Get the latest tag
-      id: get_latest_tag
+    - name: Configure Git
       run: |
-        latest_tag=$(git describe --tags `git rev-list --tags --max-count=1` 2>/dev/null || echo "")
-        if [ -z "$latest_tag" ]; then
-          latest_tag="1.0.0"
-        fi
-        echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
+        git config user.name "Pratikkumar Mohite"
+        git config user.email "mohite770.pm@gmail.com"
 
-    - name: Increment version
-      id: increment_version
+    - name: debug
       run: |
-        latest_tag=${{ steps.get_latest_tag.outputs.latest_tag }}
-        IFS='.' read -r -a version_parts <<< "$latest_tag"
+        git --version
+    
+    - name: Update the latest tag
+      id: update_latest_tag
+      run: |
+        echo "Last tag: latest_tag=\"$(git tag | head -n 1)\""
+        latest_tag="$(git tag --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)"
+        if [ -z "$latest_tag" ]; then
+         latest_tag="0.0.1"
+        fi 
+     
+        IFS='.' read -ra version_parts <<< "$latest_tag"
         major=${version_parts[0]}
         minor=${version_parts[1]}
         patch=${version_parts[2]}
         new_patch=$((patch + 1))
         new_tag="$major.$minor.$new_patch"
-        echo "$new_tag" >> $GITHUB_OUTPUT
+        echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
 
     - name: Create and push new tag
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TAG_PUSH_TOKEN }}
       run: |
-        new_tag=${{ steps.increment_version.outputs.new_tag }}
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git tag $new_tag
+        new_tag=${{ steps.update_latest_tag.outputs.new_tag }}
+        git tag -a $new_tag -m "Release $new_tag"
         git push origin $new_tag
