@@ -23,7 +23,7 @@ jobs:
     - name: Get the latest tag
       id: get_latest_tag
       run: |
-        git describe --tags `git rev-list --tags --max-count=1` 2>/dev/null
+        git describe --tags --abbrev=0
 
     - name: Increment version
       id: increment_version
