@@ -43,8 +43,6 @@ jobs:
         echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
 
     - name: Create and push new tag
-      # env:
-      #   GITHUB_TOKEN: ${{ secrets.GITHUB_TAG_PUSH_TOKEN }}
       run: |
         new_tag=${{ steps.increment_version.outputs.new_tag }}
         git tag -a $new_tag -m "Release $new_tag"
