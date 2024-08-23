@@ -23,11 +23,12 @@ jobs:
     - name: Get the latest tag
       id: get_latest_tag
       run: |
-        echo "Last tag: lastTag=\"$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)\""
-        lastTag="$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)"
-        if [ -z "$lastTag" ]; then
-         lastTag="0.0.1"
+        echo "Last tag: latest_tag=\"$(git tag --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)\""
+        latest_tag="$(git tag --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)"
+        if [ -z "$latest_tag" ]; then
+         latest_tag="0.0.1"
         fi
+        echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
 
     - name: Increment version
       id: increment_version
