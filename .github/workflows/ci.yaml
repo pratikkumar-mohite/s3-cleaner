@@ -24,21 +24,16 @@ jobs:
       run: |
         git --version
     
-    - name: Get the latest tag
-      id: get_latest_tag
+    - name: Update the latest tag
+      id: update_latest_tag
       run: |
         echo "Last tag: latest_tag=\"$(git tag --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)\""
         latest_tag="$(git tag --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)"
         if [ -z "$latest_tag" ]; then
          latest_tag="0.0.1"
         fi 
-        echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
-
-    - name: Increment version
-      id: increment_version
-      run: |
-        latest_tag=${{ steps.get_latest_tag.outputs.latest_tag }}
-        IFS='.' read -r -a version_parts <<< "$latest_tag"
+     
+        IFS='.' read -ra version_parts <<< "$latest_tag"
         major=${version_parts[0]}
         minor=${version_parts[1]}
         patch=${version_parts[2]}
@@ -48,6 +43,6 @@ jobs:
 
     - name: Create and push new tag
       run: |
-        new_tag=${{ steps.increment_version.outputs.new_tag }}
+        new_tag=${{ steps.update_latest_tag.outputs.new_tag }}
         git tag -a $new_tag -m "Release $new_tag"
         git push origin $new_tag
