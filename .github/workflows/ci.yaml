@@ -27,7 +27,7 @@ jobs:
     - name: Update the latest tag
       id: update_latest_tag
       run: |
-        echo "Last tag: latest_tag=\"$(git tag --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)\""
+        echo "Last tag: latest_tag=\"$(git tag | head -n 1)\""
         latest_tag="$(git tag --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)"
         if [ -z "$latest_tag" ]; then
          latest_tag="0.0.1"
