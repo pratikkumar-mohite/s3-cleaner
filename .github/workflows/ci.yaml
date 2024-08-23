@@ -13,7 +13,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v2
 
     - name: Configure Git
       run: |
@@ -23,7 +23,11 @@ jobs:
     - name: Get the latest tag
       id: get_latest_tag
       run: |
-        git describe --tags --abbrev=0
+        echo "Last tag: lastTag=\"$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)\""
+        lastTag="$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)"
+        if [ -z "$lastTag" ]; then
+         lastTag="0.0.1"
+        fi
 
     - name: Increment version
       id: increment_version
