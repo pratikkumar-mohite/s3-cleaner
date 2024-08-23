@@ -28,7 +28,7 @@ jobs:
         if [ -z "$latest_tag" ]; then
          latest_tag="0.0.1"
         fi
-        echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
+        echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
 
     - name: Increment version
       id: increment_version
