@@ -19,6 +19,10 @@ jobs:
       run: |
         git config user.name "Pratikkumar Mohite"
         git config user.email "mohite770.pm@gmail.com"
+
+    - name: debug
+      run: |
+        git --version
     
     - name: Get the latest tag
       id: get_latest_tag
