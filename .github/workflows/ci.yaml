@@ -40,7 +40,7 @@ jobs:
           new_patch=$((patch + 1))
           new_tag="v$major.$minor.$new_patch"
           echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
-        fi 
+        fi
 
     - name: Create and push new tag
       run: |
