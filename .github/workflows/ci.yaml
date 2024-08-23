@@ -29,18 +29,18 @@ jobs:
       run: |
         latest_tag=$(git describe --tags --abbrev=0)
         if [ -z "$latest_tag" ]; then
-         latest_tag="0.0.1"
+          latest_tag="v0.0.1"
+          echo "new_tag=$latest_tag" >> $GITHUB_OUTPUT
+        else
+          echo $latest_tag
+          IFS='.' read -ra version_parts <<< "$latest_tag"
+          major=${version_parts[0]}
+          minor=${version_parts[1]}
+          patch=${version_parts[2]}
+          new_patch=$((patch + 1))
+          new_tag="v$major.$minor.$new_patch"
+          echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
         fi 
-
-        echo $latest_tag
-     
-        IFS='.' read -ra version_parts <<< "$latest_tag"
-        major=${version_parts[0]}
-        minor=${version_parts[1]}
-        patch=${version_parts[2]}
-        new_patch=$((patch + 1))
-        new_tag="$major.$minor.$new_patch"
-        echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
 
     - name: Create and push new tag
       run: |
