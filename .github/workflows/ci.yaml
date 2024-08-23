@@ -27,6 +27,7 @@ jobs:
     - name: Update the latest tag
       id: update_latest_tag
       run: |
+        git fetch
         latest_tag="$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)"
         if [ -z "$latest_tag" ]; then
           latest_tag="v0.0.1"
