@@ -84,6 +84,11 @@ func (c *S3Client) listObjectVersions(bucket *string) []S3BucketObject {
 
 func (c *S3Client) GetS3BucketObjects() []S3BucketObject {
 	bucket := c.getS3Bucket(c.Bucket)
+	
+	if bucket == "" {
+		log.Fatalf("Bucket %s not found\n", c.Bucket)
+	}
+
 	output, err := c.Client.ListObjectsV2(context.TODO(), &s3.ListObjectsV2Input{
 		Bucket: &bucket,
 	})
