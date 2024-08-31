@@ -29,6 +29,7 @@ jobs:
         git fetch
         latest_tag="$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)"
         echo $latest_tag
+        git ls-remote --tags origin
     
     - name: Update the latest tag
       id: update_latest_tag
