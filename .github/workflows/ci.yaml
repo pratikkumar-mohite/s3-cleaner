@@ -41,8 +41,8 @@ jobs:
           echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
         fi
 
-    - name: Create and push new tag
-      run: |
-        new_tag=${{ steps.update_latest_tag.outputs.new_tag }}
-        git tag -a $new_tag -m "Release $new_tag"
-        git push origin $new_tag
+    # - name: Create and push new tag
+    #   run: |
+    #     new_tag=${{ steps.update_latest_tag.outputs.new_tag }}
+    #     git tag -a $new_tag -m "Release $new_tag"
+    #     git push origin $new_tag

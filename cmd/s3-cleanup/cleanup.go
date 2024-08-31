@@ -1,4 +1,4 @@
-package cmd
+package main
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ func setup() aws.S3Client {
 	return client
 }
 
-func S3Cleanup() {
+func s3Cleanup() {
 	s3Client := setup()
 	object1 := s3Client.UploadS3BucketObjects("test/files/file1.txt")
 	s3Client.UploadS3BucketObjects("test/files/file2.txt")
