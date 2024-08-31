@@ -23,7 +23,8 @@ jobs:
     - name: debug
       run: |
         git --version
-        git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1
+        latest_tag="$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)"
+        echo $latest_tag
     
     - name: Update the latest tag
       id: update_latest_tag
