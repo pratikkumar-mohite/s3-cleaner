@@ -34,6 +34,13 @@ func s3Cleanup() {
 	startTime := time.Now()
 
 	objects := s3Client.GetS3BucketObjects()
+
+	if len(objects) == 0 {
+		log.Infof("No objects found in bucket %s\n", s3Client.Bucket)
+		s3Client.S3BucketDelete()
+		return
+	}
+
 	var wg sync.WaitGroup
 	objectChan := make(chan aws.S3BucketObject)
 
