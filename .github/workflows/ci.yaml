@@ -46,7 +46,7 @@ jobs:
           minor=${version_parts[1]}
           patch=${version_parts[2]}
           new_patch=$((patch + 1))
-          new_tag="v$major.$minor.$new_patch"
+          new_tag="$major.$minor.$new_patch"
           echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
         fi
 
