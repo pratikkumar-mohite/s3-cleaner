@@ -13,7 +13,7 @@ import (
 func (c *S3Client) getS3Bucket(bucket_name string) string {
 	output, err := c.Client.ListBuckets(context.TODO(), &s3.ListBucketsInput{})
 	if err != nil {
-		log.Fatalf("unable to list buckets, " + err.Error())
+		log.Fatalf("Unable to list buckets, " + err.Error())
 	}
 	for _, bucket := range output.Buckets {
 		if aws.ToString(bucket.Name) == bucket_name {
@@ -21,7 +21,7 @@ func (c *S3Client) getS3Bucket(bucket_name string) string {
 		}
 	}
 	if bucket_name == "" {
-		log.Fatalf("bucket name is empty")
+		log.Fatalf("Bucket name is empty %s", bucket_name)
 	}
 	return ""
 }
@@ -33,7 +33,7 @@ func (c *S3Client) checkVersioningStatus(bucket string) string {
 
 	result, err := c.Client.GetBucketVersioning(context.TODO(), input)
 	if err != nil {
-		log.Fatalf("failed to get bucket versioning, %v" + err.Error())
+		log.Fatalf("Failed to get bucket versioning, %v" + err.Error())
 	}
 
 	return string(result.Status)
@@ -51,7 +51,7 @@ func (c *S3Client) listObjectVersions(bucket *string) []S3BucketObject {
 	for paginator.HasMorePages() {
 		page, err := paginator.NextPage(context.TODO())
 		if err != nil {
-			log.Fatalf("failed to get page, %v", err)
+			log.Fatalf("Failed to get page, %v", err)
 		}
 
 		for _, version := range page.Versions {
@@ -83,7 +83,7 @@ func (c *S3Client) GetS3BucketObjects() []S3BucketObject {
 		Bucket: &bucket,
 	})
 	if err != nil {
-		log.Fatalf("unable to list objects, %v" + err.Error())
+		log.Fatalf("Unable to list objects, %v" + err.Error())
 	}
 	objects := make([]S3BucketObject, len(output.Contents))
 	if c.checkVersioningStatus(bucket) == "Enabled" {
@@ -108,7 +108,7 @@ func (c *S3Client) DeleteS3BucketObjectVersion(object_name string, version_id st
 		VersionId: &version_id,
 	})
 	if err != nil {
-		log.Fatalf("unable to delete object version, %v" + err.Error())
+		log.Errorf("Unable to delete object version, %v" + err.Error())
 	}
 }
 

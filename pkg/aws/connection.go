@@ -12,7 +12,7 @@ import (
 func AWSConnection(profile string) aws.Config {
 	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithSharedConfigProfile(profile))
 	if err != nil {
-		log.Fatalf("unable to load SDK config, %v", err)
+		log.Fatalf("Unable to load SDK config, %v", err)
 	}
 	return cfg
 }
