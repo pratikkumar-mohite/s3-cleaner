@@ -12,16 +12,24 @@ func setup() aws.S3Client {
 	config := aws.AWSConnection(getFromEnv("AWS_PROFILE"))
 	client := aws.S3Connection(config)
 	client.Bucket = getFromEnv("AWS_DELETE_S3_BUCKET")
+	_ = getFromEnv("AWS_REGION")
 	return client
 }
 
-func s3Cleanup() {
-	s3Client := setup()
+func s3Upload(s3Client aws.S3Client) {
 	object1 := s3Client.UploadS3BucketObjects("test/files/file1.txt")
 	s3Client.UploadS3BucketObjects("test/files/file2.txt")
 	s3Client.UploadS3BucketObjects("test/files/file1.txt")
 	s3Client.UploadS3BucketObjects("test/files/file2.txt")
 	s3Client.DeleteS3BucketObjectVersion("file1.txt", object1)
+}
+
+func s3Cleanup() {
+	s3Client := setup()
+
+	if getFromEnv("AWS_UPLOAD_TEST_FILES") == "true" {
+		s3Upload(s3Client)
+	}
 
 	startTime := time.Now()
 

@@ -74,6 +74,11 @@ func (c *S3Client) listObjectVersions(bucket *string) []S3BucketObject {
 		objects = append(objects, *object)
 	}
 
+	if len(objects) == 0 {
+		log.Infof("No objects found in bucket %s\n", *bucket)
+		return objects
+	}
+
 	return objects
 }
 
