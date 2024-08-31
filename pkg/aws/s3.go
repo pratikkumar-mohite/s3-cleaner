@@ -2,10 +2,10 @@ package aws
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"strings"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
@@ -13,7 +13,7 @@ import (
 func (c *S3Client) getS3Bucket(bucket_name string) string {
 	output, err := c.Client.ListBuckets(context.TODO(), &s3.ListBucketsInput{})
 	if err != nil {
-		panic("unable to list buckets, " + err.Error())
+		log.Fatalf("unable to list buckets, " + err.Error())
 	}
 	for _, bucket := range output.Buckets {
 		if aws.ToString(bucket.Name) == bucket_name {
@@ -21,7 +21,7 @@ func (c *S3Client) getS3Bucket(bucket_name string) string {
 		}
 	}
 	if bucket_name == "" {
-		panic("bucket name is empty")
+		log.Fatalf("bucket name is empty")
 	}
 	return ""
 }
@@ -33,7 +33,7 @@ func (c *S3Client) checkVersioningStatus(bucket string) string {
 
 	result, err := c.Client.GetBucketVersioning(context.TODO(), input)
 	if err != nil {
-		panic("failed to get bucket versioning, " + err.Error())
+		log.Fatalf("failed to get bucket versioning, %v" + err.Error())
 	}
 
 	return string(result.Status)
@@ -51,7 +51,7 @@ func (c *S3Client) listObjectVersions(bucket *string) []S3BucketObject {
 	for paginator.HasMorePages() {
 		page, err := paginator.NextPage(context.TODO())
 		if err != nil {
-			fmt.Printf("failed to get page, %v", err)
+			log.Fatalf("failed to get page, %v", err)
 		}
 
 		for _, version := range page.Versions {
@@ -83,10 +83,11 @@ func (c *S3Client) GetS3BucketObjects() []S3BucketObject {
 		Bucket: &bucket,
 	})
 	if err != nil {
-		panic("unable to list objects, " + err.Error())
+		log.Fatalf("unable to list objects, %v" + err.Error())
 	}
 	objects := make([]S3BucketObject, len(output.Contents))
 	if c.checkVersioningStatus(bucket) == "Enabled" {
+		log.Infof("Versioning is enabled for bucket %s\n", bucket)
 		return c.listObjectVersions(&bucket)
 	}
 	for index, object := range output.Contents {
@@ -107,14 +108,14 @@ func (c *S3Client) DeleteS3BucketObjectVersion(object_name string, version_id st
 		VersionId: &version_id,
 	})
 	if err != nil {
-		panic("unable to delete object version, " + err.Error())
+		log.Fatalf("unable to delete object version, %v" + err.Error())
 	}
 }
 
 func (c *S3Client) UploadS3BucketObjects(object_file_path string) string {
 	file, err := os.Open(object_file_path)
 	if err != nil {
-		panic("Error opening file:" + err.Error())
+		log.Fatalf("Error opening file: %v" + err.Error())
 	}
 	defer file.Close()
 
@@ -127,8 +128,8 @@ func (c *S3Client) UploadS3BucketObjects(object_file_path string) string {
 	})
 
 	if err != nil {
-		panic("Error uploading file:" + err.Error())
+		log.Fatalf("Error uploading file: %v" + err.Error())
 	}
-	fmt.Printf("File %s uploaded successfully\n", key)
+	log.Infof("File %s uploaded successfully\n", key)
 	return *object.VersionId
 }
