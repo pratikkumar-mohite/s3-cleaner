@@ -22,6 +22,7 @@ jobs:
 
     - name: debug
       run: |
+        ls
         git --version
         git fetch
         latest_tag="$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)"
