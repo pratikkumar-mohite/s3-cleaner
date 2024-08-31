@@ -13,33 +13,33 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.ref }}
 
     - name: Configure Git
       run: |
         git config user.name "Pratikkumar Mohite"
         git config user.email "mohite770.pm@gmail.com"
-
-    - name: debug
-      run: |
-        git --version
     
     - name: Update the latest tag
       id: update_latest_tag
       run: |
-        echo "Last tag: latest_tag=\"$(git tag | head -n 1)\""
-        latest_tag="$(git tag --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)"
+        git fetch --tags
+        latest_tag="$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)"
         if [ -z "$latest_tag" ]; then
-         latest_tag="0.0.1"
-        fi 
-     
-        IFS='.' read -ra version_parts <<< "$latest_tag"
-        major=${version_parts[0]}
-        minor=${version_parts[1]}
-        patch=${version_parts[2]}
-        new_patch=$((patch + 1))
-        new_tag="$major.$minor.$new_patch"
-        echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
+          latest_tag="v0.0.1"
+          echo "new_tag=$latest_tag" >> $GITHUB_OUTPUT
+        else
+          echo $latest_tag
+          IFS='.' read -ra version_parts <<< "$latest_tag"
+          major=${version_parts[0]}
+          minor=${version_parts[1]}
+          patch=${version_parts[2]}
+          new_patch=$((patch + 1))
+          new_tag="$major.$minor.$new_patch"
+          echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
+        fi
 
     - name: Create and push new tag
       run: |
