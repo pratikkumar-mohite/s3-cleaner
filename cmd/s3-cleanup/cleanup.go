@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"time"
 	"sync"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/pratikkumar-mohite/s3-cleanup/pkg/aws"
 )
 
@@ -45,7 +45,7 @@ func s3Cleanup() {
 					}(version)
 				}
 				versionWG.Wait()
-				fmt.Printf("Deleted Object: %v\n", object.ObjectName)
+				log.Infof("Deleted Object: %v\n", object.ObjectName)
 			}
 			wg.Done()
 		}
@@ -60,5 +60,5 @@ func s3Cleanup() {
 	wg.Wait()
 
 	elapsedTime := time.Since(startTime)
-	fmt.Println("Total time taken for object deletion: ", elapsedTime)
+	log.Infof("Time taken for object deletion: %v", elapsedTime)
 }
