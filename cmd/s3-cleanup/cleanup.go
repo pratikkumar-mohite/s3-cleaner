@@ -69,4 +69,6 @@ func s3Cleanup() {
 
 	elapsedTime := time.Since(startTime)
 	log.Infof("Time taken for object deletion: %v", elapsedTime)
+
+	s3Client.S3BucketDelete()
 }

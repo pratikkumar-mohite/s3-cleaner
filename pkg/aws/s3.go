@@ -138,3 +138,13 @@ func (c *S3Client) UploadS3BucketObjects(object_file_path string) string {
 	log.Infof("File %s uploaded successfully\n", key)
 	return *object.VersionId
 }
+
+func (c *S3Client) S3BucketDelete() {
+	_, err := c.Client.DeleteBucket(context.TODO(), &s3.DeleteBucketInput{
+		Bucket: &c.Bucket,
+	})
+	if err != nil {
+		log.Fatalf("Unable to delete bucket, %v" + err.Error())
+	}
+	log.Infof("Bucket %s deleted successfully\n", c.Bucket)
+}
