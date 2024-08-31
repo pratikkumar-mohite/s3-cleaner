@@ -60,5 +60,5 @@ func s3Cleanup() {
 	wg.Wait()
 
 	elapsedTime := time.Since(startTime)
-	log.Infof("Total time taken for object deletion: %v", elapsedTime)
+	log.Infof("Time taken for object deletion: %v", elapsedTime)
 }
