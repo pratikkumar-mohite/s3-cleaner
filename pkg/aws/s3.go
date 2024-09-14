@@ -10,7 +10,11 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
-func (c *S3Client) getS3Bucket(bucket_name string) string {
+func (c *S3Client) GetS3Bucket(bucket_name string) string {
+	if bucket_name == "" {
+		log.Fatalf("Bucket name is empty %s", bucket_name)
+	}
+
 	output, err := c.Client.ListBuckets(context.TODO(), &s3.ListBucketsInput{})
 	if err != nil {
 		log.Fatalf("Unable to list buckets, " + err.Error())
@@ -19,9 +23,6 @@ func (c *S3Client) getS3Bucket(bucket_name string) string {
 		if aws.ToString(bucket.Name) == bucket_name {
 			return bucket_name
 		}
-	}
-	if bucket_name == "" {
-		log.Fatalf("Bucket name is empty %s", bucket_name)
 	}
 	return ""
 }
@@ -83,7 +84,7 @@ func (c *S3Client) listObjectVersions(bucket *string) []S3BucketObject {
 }
 
 func (c *S3Client) GetS3BucketObjects() []S3BucketObject {
-	bucket := c.getS3Bucket(c.Bucket)
+	bucket := c.GetS3Bucket(c.Bucket)
 	
 	if bucket == "" {
 		log.Fatalf("Bucket %s not found\n", c.Bucket)

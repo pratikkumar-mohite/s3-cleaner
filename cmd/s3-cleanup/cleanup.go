@@ -27,6 +27,12 @@ func s3Upload(s3Client aws.S3Client) {
 func s3Cleanup() {
 	s3Client := setup()
 
+	bucket := s3Client.GetS3Bucket(s3Client.Bucket)
+
+	if bucket == "" {
+		log.Fatalf("Bucket %s not found\n", s3Client.Bucket)
+	}
+
 	if getFromEnv("AWS_UPLOAD_TEST_FILES") == "true" {
 		s3Upload(s3Client)
 	}
