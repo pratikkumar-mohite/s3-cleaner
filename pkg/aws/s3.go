@@ -10,7 +10,11 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
-func (c *S3Client) getS3Bucket(bucket_name string) string {
+func (c *S3Client) GetS3Bucket(bucket_name string) string {
+	if bucket_name == "" {
+		log.Fatalf("Bucket name is empty %s", bucket_name)
+	}
+
 	output, err := c.Client.ListBuckets(context.TODO(), &s3.ListBucketsInput{})
 	if err != nil {
 		log.Fatalf("Unable to list buckets, " + err.Error())
@@ -19,9 +23,6 @@ func (c *S3Client) getS3Bucket(bucket_name string) string {
 		if aws.ToString(bucket.Name) == bucket_name {
 			return bucket_name
 		}
-	}
-	if bucket_name == "" {
-		log.Fatalf("Bucket name is empty %s", bucket_name)
 	}
 	return ""
 }
@@ -83,7 +84,12 @@ func (c *S3Client) listObjectVersions(bucket *string) []S3BucketObject {
 }
 
 func (c *S3Client) GetS3BucketObjects() []S3BucketObject {
-	bucket := c.getS3Bucket(c.Bucket)
+	bucket := c.GetS3Bucket(c.Bucket)
+	
+	if bucket == "" {
+		log.Fatalf("Bucket %s not found\n", c.Bucket)
+	}
+
 	output, err := c.Client.ListObjectsV2(context.TODO(), &s3.ListObjectsV2Input{
 		Bucket: &bucket,
 	})
@@ -114,6 +120,20 @@ func (c *S3Client) DeleteS3BucketObjectVersion(object_name string, version_id st
 	})
 	if err != nil {
 		log.Errorf("Unable to delete object version, %v" + err.Error())
+	} else {
+		log.Infof("Object %s version %s deleted successfully\n", object_name, version_id)
+	}
+}
+
+func (c *S3Client) DeleteS3BucketObject(object_name string) {
+	_, err := c.Client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
+		Bucket: &c.Bucket,
+		Key:    &object_name,
+	})
+	if err != nil {
+		log.Errorf("Unable to delete object, %v" + err.Error())
+	} else {
+		log.Infof("Object %s deleted successfully\n", object_name)
 	}
 }
 
@@ -136,7 +156,11 @@ func (c *S3Client) UploadS3BucketObjects(object_file_path string) string {
 		log.Fatalf("Error uploading file: %v" + err.Error())
 	}
 	log.Infof("File %s uploaded successfully\n", key)
-	return *object.VersionId
+	if c.checkVersioningStatus(c.Bucket) == "Enabled" {
+		return *object.VersionId
+	} else {
+		return c.Bucket
+	}
 }
 
 func (c *S3Client) S3BucketDelete() {

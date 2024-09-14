@@ -27,6 +27,12 @@ func s3Upload(s3Client aws.S3Client) {
 func s3Cleanup() {
 	s3Client := setup()
 
+	bucket := s3Client.GetS3Bucket(s3Client.Bucket)
+
+	if bucket == "" {
+		log.Fatalf("Bucket %s not found\n", s3Client.Bucket)
+	}
+
 	if getFromEnv("AWS_UPLOAD_TEST_FILES") == "true" {
 		s3Upload(s3Client)
 	}
@@ -34,6 +40,13 @@ func s3Cleanup() {
 	startTime := time.Now()
 
 	objects := s3Client.GetS3BucketObjects()
+
+	if len(objects) == 0 {
+		log.Infof("No objects found in bucket %s\n", s3Client.Bucket)
+		s3Client.S3BucketDelete()
+		return
+	}
+
 	var wg sync.WaitGroup
 	objectChan := make(chan aws.S3BucketObject)
 
@@ -45,6 +58,15 @@ func s3Cleanup() {
 				}
 
 				var versionWG sync.WaitGroup
+
+				if len(object.ObjectVersion) == 0 {
+					versionWG.Add(1)
+					go func(object_name string){
+						defer versionWG.Done()
+						s3Client.DeleteS3BucketObject(object_name)
+					}(object.ObjectName)
+				}
+
 				for _, version := range object.ObjectVersion {
 					versionWG.Add(1)
 					go func(version string){
@@ -53,7 +75,6 @@ func s3Cleanup() {
 					}(version)
 				}
 				versionWG.Wait()
-				log.Infof("Deleted Object: %v\n", object.ObjectName)
 			}
 			wg.Done()
 		}
@@ -68,7 +89,8 @@ func s3Cleanup() {
 	wg.Wait()
 
 	elapsedTime := time.Since(startTime)
-	log.Infof("Time taken for object deletion: %v", elapsedTime)
 
 	s3Client.S3BucketDelete()
+
+	log.Infof("Time taken for object deletion: %v", elapsedTime)
 }
