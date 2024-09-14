@@ -58,6 +58,15 @@ func s3Cleanup() {
 				}
 
 				var versionWG sync.WaitGroup
+
+				if len(object.ObjectVersion) == 0 {
+					versionWG.Add(1)
+					go func(object_name string){
+						defer versionWG.Done()
+						s3Client.DeleteS3BucketObject(object_name)
+					}(object.ObjectName)
+				}
+
 				for _, version := range object.ObjectVersion {
 					versionWG.Add(1)
 					go func(version string){

@@ -125,6 +125,18 @@ func (c *S3Client) DeleteS3BucketObjectVersion(object_name string, version_id st
 	}
 }
 
+func (c *S3Client) DeleteS3BucketObject(object_name string) {
+	_, err := c.Client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
+		Bucket: &c.Bucket,
+		Key:    &object_name,
+	})
+	if err != nil {
+		log.Errorf("Unable to delete object, %v" + err.Error())
+	} else {
+		log.Infof("Object %s deleted successfully\n", object_name)
+	}
+}
+
 func (c *S3Client) UploadS3BucketObjects(object_file_path string) string {
 	file, err := os.Open(object_file_path)
 	if err != nil {
