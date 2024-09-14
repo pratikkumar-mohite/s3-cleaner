@@ -66,7 +66,6 @@ func s3Cleanup() {
 					}(version)
 				}
 				versionWG.Wait()
-				log.Infof("Deleted Object: %v\n", object.ObjectName)
 			}
 			wg.Done()
 		}
@@ -81,7 +80,7 @@ func s3Cleanup() {
 	wg.Wait()
 
 	elapsedTime := time.Since(startTime)
-	log.Infof("Time taken for object deletion: %v", elapsedTime)
+	log.Infof("Time taken: %v", elapsedTime)
 
 	s3Client.S3BucketDelete()
 }

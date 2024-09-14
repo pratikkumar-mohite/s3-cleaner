@@ -120,6 +120,8 @@ func (c *S3Client) DeleteS3BucketObjectVersion(object_name string, version_id st
 	})
 	if err != nil {
 		log.Errorf("Unable to delete object version, %v" + err.Error())
+	} else {
+		log.Infof("Object %s version %s deleted successfully\n", object_name, version_id)
 	}
 }
 
@@ -142,7 +144,11 @@ func (c *S3Client) UploadS3BucketObjects(object_file_path string) string {
 		log.Fatalf("Error uploading file: %v" + err.Error())
 	}
 	log.Infof("File %s uploaded successfully\n", key)
-	return *object.VersionId
+	if c.checkVersioningStatus(c.Bucket) == "Enabled" {
+		return *object.VersionId
+	} else {
+		return c.Bucket
+	}
 }
 
 func (c *S3Client) S3BucketDelete() {
