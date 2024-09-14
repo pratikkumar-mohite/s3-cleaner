@@ -80,7 +80,8 @@ func s3Cleanup() {
 	wg.Wait()
 
 	elapsedTime := time.Since(startTime)
-	log.Infof("Time taken: %v", elapsedTime)
 
 	s3Client.S3BucketDelete()
+
+	log.Infof("Time taken for object deletion: %v", elapsedTime)
 }
