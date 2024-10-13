@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/pratikkumar-mohite/s3-cleanup/pkg/aws"
+	"github.com/pratikkumar-mohite/s3-cleaner/pkg/aws"
 )
 
 func setup() aws.S3Client {

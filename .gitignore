@@ -28,4 +28,4 @@ go.work.sum
 *.txt
 
 # binary file
-/s3-cleanup
+/s3-cleaner

@@ -1,4 +1,4 @@
-module github.com/pratikkumar-mohite/s3-cleanup
+module github.com/pratikkumar-mohite/s3-cleaner
 
 go 1.22.5
 
