@@ -5,7 +5,7 @@ mod:
 	@go mod verify
 
 build: bench
-	@CGO_ENABLED=0 go build -pgo=cpu.out -ldflags="-w -s" -v -o s3-cleanup ./cmd/s3-cleanup/
+	@CGO_ENABLED=0 go build -v -o s3-cleanup ./cmd/s3-cleanup/
 
 run:
 	@CGO_ENABLED=0 go run ./cmd/s3-cleanup/
