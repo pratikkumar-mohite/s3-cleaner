@@ -55,7 +55,7 @@ There is an alternative to test the application with actual AWS S3 bucket with s
     ```sh
     make run
     ```
-This will upload `file1.txt` and `file2.txt` to S3 bucket and then perform S3 object + bucket cleanup
+This will upload `file1.txt` and `file2.txt` to S3 bucket and then perform S3 object + bucket cleanup.
 
 
 ## Usage
@@ -74,6 +74,7 @@ This will upload `file1.txt` and `file2.txt` to S3 bucket and then perform S3 ob
     ```sh
     s3-cleaner
     ```
+![Usage](docs/gif/s3-cleaner-usage.gif)
 
 ## Contributing
 
