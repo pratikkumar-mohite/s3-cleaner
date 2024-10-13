@@ -58,6 +58,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_CI_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./s3-cleanup
-          asset_name: s3-cleanup
+          asset_path: ./s3-cleaner
+          asset_name: s3-cleaner
           asset_content_type: application/octet-stream
