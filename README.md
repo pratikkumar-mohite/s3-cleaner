@@ -35,6 +35,29 @@ This project is a Go application designed to delete AWS S3 buckets.  It retrieve
 ## Test
 As of now the actual test are not there because we dont have s3 mock apis to mimic the s3 object behaviour specifically in go, this project has dependency on [S3Mock project](https://github.com/pratikkumar-mohite/S3Mock) to enable the `go test`.
 
+There is an alternative to test the application with actual AWS S3 bucket with s3-cleaner.
+
+1. Perform the above Build stage
+2. Create test directory
+    ```sh
+    mkdir -p test/files
+    ```
+3. Create dummy files
+    ```sh
+     dd if=/dev/urandom of=test/files/file1.txt count=100 bs=1M
+      dd if=/dev/urandom of=test/files/file2.txt count=100 bs=1M
+    ```
+4. Export AWS_UPLOAD_TEST_FILES
+    ```sh
+    export AWS_UPLOAD_TEST_FILES=true
+    ```
+5. Run the application
+    ```sh
+    make run
+    ```
+This will upload `file1.txt` and `file2.txt` to S3 bucket and then perform S3 object + bucket cleanup.
+
+
 ## Usage
 
 1. Ensure you have AWS credentials configured. You can set them up using the AWS CLI(ignore if already set):
@@ -47,10 +70,11 @@ As of now the actual test are not there because we dont have s3 mock apis to mim
     export AWS_DELETE_S3_BUCKET=pratikkumar-mohite-test
     export AWS_PROFILE=pratikkumar-mohite-aws
     ```
-2. Run the application:
+3. Run the application:
     ```sh
     s3-cleaner
     ```
+![Usage](docs/gif/s3-cleaner-usage.gif)
 
 ## Contributing
 
