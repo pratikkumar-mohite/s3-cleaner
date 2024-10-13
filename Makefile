@@ -4,8 +4,8 @@ mod:
 	@go mod download
 	@go mod verify
 
-build: bench
-	@CGO_ENABLED=0 go build -v -o s3-cleanup ./cmd/s3-cleanup/
+build:
+	@CGO_ENABLED=0 go build -v -o s3-cleaner ./cmd/s3-cleanup/
 
 run:
 	@CGO_ENABLED=0 go run ./cmd/s3-cleanup/
