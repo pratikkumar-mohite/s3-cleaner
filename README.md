@@ -21,7 +21,7 @@ This project is a Go application designed to delete AWS S3 buckets.  It retrieve
     ```
 2. Navigate to the project directory:
     ```sh
-    cd s3-cleanup
+    cd s3-cleaner
     ```
 3. Build the application:
     ```sh
@@ -29,7 +29,7 @@ This project is a Go application designed to delete AWS S3 buckets.  It retrieve
     ```
 4. Move the binary to executable path
     ```sh
-    mv s3-cleanup /usr/local/bin/
+    mv s3-cleaner /usr/local/bin/
     ```
 
 ## Test
@@ -49,7 +49,7 @@ As of now the actual test are not there because we dont have s3 mock apis to mim
     ```
 2. Run the application:
     ```sh
-    s3-cleanup
+    s3-cleaner
     ```
 
 ## Contributing
