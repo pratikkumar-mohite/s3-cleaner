@@ -17,7 +17,7 @@ This project is a Go application designed to delete AWS S3 buckets.  It retrieve
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/pratikkumar-mohite/s3-cleanup.git
+    git clone https://github.com/pratikkumar-mohite/s3-cleaner.git
     ```
 2. Navigate to the project directory:
     ```sh
