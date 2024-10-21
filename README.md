@@ -17,7 +17,7 @@ This project is a Go application designed to delete AWS S3 buckets.  It retrieve
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/pratikkumar-mohite/s2-cleanup.git
+    git clone https://github.com/pratikkumar-mohite/s3-cleanup.git
     ```
 2. Navigate to the project directory:
     ```sh
@@ -45,7 +45,7 @@ There is an alternative to test the application with actual AWS S3 bucket with s
 3. Create dummy files
     ```sh
      dd if=/dev/urandom of=test/files/file1.txt count=100 bs=1M
-      dd if=/dev/urandom of=test/files/file2.txt count=100 bs=1M
+     dd if=/dev/urandom of=test/files/file2.txt count=100 bs=1M
     ```
 4. Export AWS_UPLOAD_TEST_FILES
     ```sh
