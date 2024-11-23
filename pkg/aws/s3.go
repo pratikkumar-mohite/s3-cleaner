@@ -5,9 +5,9 @@ import (
 	"os"
 	"strings"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	log "github.com/sirupsen/logrus"
 )
 
 func (c *S3Client) GetS3Bucket(bucket_name string) string {
@@ -97,7 +97,8 @@ func (c *S3Client) GetS3BucketObjects() []S3BucketObject {
 		log.Fatalf("Unable to list objects, %v" + err.Error())
 	}
 	objects := make([]S3BucketObject, len(output.Contents))
-	if c.checkVersioningStatus(bucket) == "Enabled" {
+	version_status := c.checkVersioningStatus(bucket)
+	if version_status == "Enabled" || version_status == "Suspended" {
 		log.Infof("Versioning is enabled for bucket %s\n", bucket)
 		return c.listObjectVersions(&bucket)
 	}
