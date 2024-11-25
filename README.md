@@ -60,21 +60,29 @@ This will upload `file1.txt` and `file2.txt` to S3 bucket and then perform S3 ob
 
 ## Usage
 
-1. Ensure you have AWS credentials configured. You can set them up using the AWS CLI(ignore if already set):
+1. Ensure you have AWS credentials configured. You can set them up using the AWS CLI (ignore if already set):
     ```sh
     aws configure --profile <your-aws-profile>
     ```
-2. Setup Environment variables
+2. Run the s3-cleaner cli
+    ```sh
+    s3-cleaner -p pratikkumar-mohite-aws -r us-east-1 -b pratikkumar-mohite-test
+    ```
+3. Alternatively, Setup Environment variables and then run s3-cleaner cli
     ```sh
     export AWS_REGION=us-east-1
     export AWS_DELETE_S3_BUCKET=pratikkumar-mohite-test
     export AWS_PROFILE=pratikkumar-mohite-aws
-    ```
-3. Run the application:
-    ```sh
-    s3-cleaner
+
+    $ s3-cleaner
     ```
 ![Usage](docs/gif/s3-cleaner-usage.gif)
+
+## Note
+1. In case you get following issue, there might problem with bucket region.
+```sh
+FATA[0002] Unable to list objects, %!v(MISSING)operation error S3: ListObjectsV2, https response error StatusCode: 301, RequestID: FJFNV6SB70432CZT, HostID: testB9w==, api error PermanentRedirect: The bucket you are attempting to access must be addressed using the specified endpoint. Please send all future requests to this endpoint.
+```
 
 ## Contributing
 
