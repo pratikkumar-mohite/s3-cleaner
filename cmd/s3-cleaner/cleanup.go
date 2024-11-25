@@ -1,18 +1,18 @@
 package main
 
 import (
-	"time"
 	"sync"
+	"time"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/pratikkumar-mohite/s3-cleaner/pkg/aws"
+	log "github.com/sirupsen/logrus"
 )
 
-func setup() aws.S3Client {
-	config := aws.AWSConnection(getFromEnv("AWS_PROFILE"))
+func setup(profile, region, bucket string) aws.S3Client {
+
+	config := aws.AWSConnection(profile, region)
 	client := aws.S3Connection(config)
-	client.Bucket = getFromEnv("AWS_DELETE_S3_BUCKET")
-	_ = getFromEnv("AWS_REGION")
+	client.Bucket = bucket
 	return client
 }
 
@@ -24,12 +24,15 @@ func s3Upload(s3Client aws.S3Client) {
 	s3Client.DeleteS3BucketObjectVersion("file1.txt", object1)
 }
 
-func s3Cleanup() {
-	s3Client := setup()
+func s3Cleanup(profile, region, bucket *string) {
+	var s3Client aws.S3Client
+	if *profile != "" && *region != "" && *bucket != "" {
+		s3Client = setup(*profile, *region, *bucket)
+	} else {
+		s3Client = setup(getFromEnv("AWS_PROFILE"), getFromEnv("AWS_REGION"), getFromEnv("AWS_DELETE_S3_BUCKET"))
+	}
 
-	bucket := s3Client.GetS3Bucket(s3Client.Bucket)
-
-	if bucket == "" {
+	if s3Client.GetS3Bucket(s3Client.Bucket) == "" {
 		log.Fatalf("Bucket %s not found\n", s3Client.Bucket)
 	}
 
@@ -61,7 +64,7 @@ func s3Cleanup() {
 
 				if len(object.ObjectVersion) == 0 {
 					versionWG.Add(1)
-					go func(object_name string){
+					go func(object_name string) {
 						defer versionWG.Done()
 						s3Client.DeleteS3BucketObject(object_name)
 					}(object.ObjectName)
@@ -69,7 +72,7 @@ func s3Cleanup() {
 
 				for _, version := range object.ObjectVersion {
 					versionWG.Add(1)
-					go func(version string){
+					go func(version string) {
 						defer versionWG.Done()
 						s3Client.DeleteS3BucketObjectVersion(object.ObjectName, version)
 					}(version)
@@ -80,7 +83,7 @@ func s3Cleanup() {
 		}
 	}()
 
-	for _, object := range objects{
+	for _, object := range objects {
 		wg.Add(1)
 		objectChan <- object
 	}
