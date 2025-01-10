@@ -1,0 +1,32 @@
+pipeline:
+  name: "Repository Pipeline"
+  identifier: "repository_pipeline"
+  description: "Pipeline to build and deploy from a Git repository"
+  projectIdentifier: "default_project"
+  orgIdentifier: "default"
+  tags: {}
+  stages:
+    - stage:
+        name: "Build Stage"
+        identifier: "build_stage"
+        description: "Builds the code from the repository"
+        type: "Build"
+        spec:
+          serviceDependencies: []
+          execution:
+            steps:
+              - step:
+                  name: "Clone Repository"
+                  identifier: "clone_repository"
+                  type: "GitClone"
+                  spec:
+                    connectorRef: "github"
+                    repoName: "s3-cleaner"
+                    branch: "harness"
+              - step:
+                  name: "Run Build"
+                  identifier: "run_build"
+                  type: "Run"
+                  spec:
+                    shell: "Bash"
+                    command: "make build"
