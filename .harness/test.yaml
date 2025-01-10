@@ -1,0 +1,103 @@
+pipeline:
+  name: test
+  identifier: test
+  projectIdentifier: default_project
+  orgIdentifier: default
+  tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: github
+        repoName: s3-cleaner
+        build: <+input>
+  stages:
+    - stage:
+        name: build
+        identifier: build
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          caching:
+            enabled: true
+          buildIntelligence:
+            enabled: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Docker
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Run_1
+                  identifier: Run_1
+                  spec:
+                    shell: Sh
+                    command: make build
+    - stage:
+        name: approval
+        identifier: approval
+        description: ""
+        type: Approval
+        spec:
+          execution:
+            steps:
+              - step:
+                  type: CustomApproval
+                  name: approval
+                  identifier: approval
+                  timeout: 1d
+                  spec:
+                    shell: Bash
+                    retryInterval: 10s
+                    scriptTimeout: 10m
+                    source:
+                      type: Inline
+                      spec:
+                        script: echo "hello"
+                    environmentVariables: []
+                    approvalCriteria:
+                      type: KeyValues
+                      spec:
+                        matchAnyCondition: false
+                        conditions:
+                          - key: Approve
+                            operator: equals
+                            value: "yes"
+                    rejectionCriteria:
+                      type: KeyValues
+                      spec:
+                        matchAnyCondition: false
+                        conditions: []
+                    onDelegate: true
+                    outputVariables:
+                      - name: Approve
+                        type: String
+                        value: "yes"
+        tags: {}
+    - stage:
+        name: test
+        identifier: test
+        description: ""
+        type: Custom
+        spec:
+          execution:
+            steps:
+              - step:
+                  type: ShellScript
+                  name: ShellScript_1
+                  identifier: ShellScript_1
+                  spec:
+                    shell: Bash
+                    executionTarget: {}
+                    source:
+                      type: Inline
+                      spec:
+                        script: echo "hello"
+                    environmentVariables: []
+                    outputVariables: []
+                  timeout: 10m
+        tags: {}
