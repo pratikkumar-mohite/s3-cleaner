@@ -38,47 +38,6 @@ pipeline:
                     shell: Sh
                     command: make build
     - stage:
-        name: approval
-        identifier: approval
-        description: ""
-        type: Approval
-        spec:
-          execution:
-            steps:
-              - step:
-                  type: CustomApproval
-                  name: approval
-                  identifier: approval
-                  timeout: 1d
-                  spec:
-                    shell: Bash
-                    retryInterval: 10s
-                    scriptTimeout: 10m
-                    source:
-                      type: Inline
-                      spec:
-                        script: echo "hello"
-                    environmentVariables: []
-                    approvalCriteria:
-                      type: KeyValues
-                      spec:
-                        matchAnyCondition: false
-                        conditions:
-                          - key: Approve
-                            operator: equals
-                            value: "yes"
-                    rejectionCriteria:
-                      type: KeyValues
-                      spec:
-                        matchAnyCondition: false
-                        conditions: []
-                    onDelegate: true
-                    outputVariables:
-                      - name: Approve
-                        type: String
-                        value: "yes"
-        tags: {}
-    - stage:
         name: test
         identifier: test
         description: ""
