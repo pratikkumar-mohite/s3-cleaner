@@ -18,7 +18,7 @@ func main() {
 	rootCmd.PersistentFlags().StringVarP(&profile, "profile", "p", "", "AWS Profile (Required)")
 	rootCmd.PersistentFlags().StringVarP(&region, "region", "r", "", "AWS Region (Required)")
 	rootCmd.PersistentFlags().StringVarP(&bucket, "bucket", "b", "", "AWS S3 bucket (Required)")
-	rootCmd.PersistentFlags().StringVarP(&prefix, "prefix", "p", "", "AWS S3 bucket (Required)")
+	rootCmd.PersistentFlags().StringVarP(&prefix, "prefix", "f", "", "AWS S3 bucket Prefix (Optional)")
 	rootCmd.MarkFlagsRequiredTogether("profile", "region", "bucket")
 
 	rootCmd.Execute()

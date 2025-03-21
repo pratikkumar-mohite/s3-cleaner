@@ -71,11 +71,13 @@ func s3Cleanup(profile, region, bucket, prefix *string) {
 	if *profile != "" && *region != "" && *bucket != "" {
 		s3Client = setup(*profile, *region, *bucket)
 	} else {
-		s3Client = setup(getFromEnv("AWS_PROFILE"), getFromEnv("AWS_REGION"), getFromEnv("AWS_DELETE_S3_BUCKET"))
+		s3Client = setup(getFromEnv("AWS_PROFILE"), getFromEnv("AWS_REGION"), getFromEnv("AWS_S3_BUCKET"))
 	}
 
 	if *prefix != "" {
 		s3Client.Prefix = *prefix
+	} else {
+		s3Client.Prefix = getFromEnv("AWS_S3_PREFIX")
 	}
 
 	if getFromEnv("AWS_UPLOAD_TEST_FILES") == "true" {
