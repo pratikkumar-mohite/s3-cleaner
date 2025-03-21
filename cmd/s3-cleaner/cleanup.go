@@ -100,5 +100,5 @@ func s3Cleanup(profile, region, bucket, prefix *string, bucketDelete bool) {
 		s3Client.S3BucketDelete()
 	}
 
-	log.Infof("Time taken for bucket deletion: %v", elapsedTime)
+	log.Infof("Time taken for bucket/objects deletion: %v", elapsedTime)
 }
