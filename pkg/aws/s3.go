@@ -46,8 +46,8 @@ func (c *S3Client) listObjectVersions(bucket *string) []S3BucketObject {
 	var objects []S3BucketObject
 	var objectsMap = make(map[string]*S3BucketObject)
 	input := &s3.ListObjectVersionsInput{
-		Bucket: aws.String(*bucket),
-		Prefix: aws.String(c.Prefix),
+		Bucket:  aws.String(*bucket),
+		Prefix:  aws.String(c.Prefix),
 		MaxKeys: aws.Int32(MaxKeys),
 	}
 
@@ -96,7 +96,7 @@ func (c *S3Client) GetS3BucketObjects() []S3BucketObject {
 
 	output, err := c.Client.ListObjectsV2(context.TODO(), &s3.ListObjectsV2Input{
 		Bucket:  &bucket,
-		Prefix: aws.String(c.Prefix),
+		Prefix:  aws.String(c.Prefix),
 		MaxKeys: aws.Int32(MaxKeys),
 	})
 	if err != nil {

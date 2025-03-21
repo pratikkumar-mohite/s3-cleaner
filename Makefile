@@ -10,6 +10,9 @@ build:
 run:
 	@CGO_ENABLED=0 go run ./cmd/s3-cleaner/
 
+fmt:
+	@go fmt ./...
+
 # test:
 # 	@go run github.com/golangci/golangci-lint/cmd/golangci-lint@latest run -v --timeout=10m
 # 	@go test -v -timeout 20m -covermode=atomic -coverprofile=coverage.txt ./...
