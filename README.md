@@ -79,6 +79,7 @@ This will upload `file1.txt` and `file2.txt` to S3 bucket and then perform S3 ob
     a. Use Prefix, In case you want to delete specific folder
     - Use CLI - `s3-cleaner -p pratikkumar-mohite-aws -r us-east-1 -b pratikkumar-mohite-test -f /prefix/path`
     - Use ENV variable - `export AWS_S3_PREFIX=/prefix/path`
+    
 ![Usage](docs/gif/s3-cleaner-usage.gif)
 
 ## Note
