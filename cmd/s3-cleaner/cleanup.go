@@ -66,7 +66,7 @@ func concurrentCleanup(s3Client aws.S3Client, objects []aws.S3BucketObject) {
 	wg.Wait()
 }
 
-func s3Cleanup(profile, region, bucket, prefix *string) {
+func s3Cleanup(profile, region, bucket, prefix *string, bucketDelete bool) {
 	var s3Client aws.S3Client
 	if *profile != "" && *region != "" && *bucket != "" {
 		s3Client = setup(*profile, *region, *bucket)
@@ -96,7 +96,9 @@ func s3Cleanup(profile, region, bucket, prefix *string) {
 
 	elapsedTime := time.Since(startTime)
 
-	s3Client.S3BucketDelete()
+	if bucketDelete || getFromEnv("AWS_S3_BUCKET_DELETE") == "true" {
+		s3Client.S3BucketDelete()
+	}
 
 	log.Infof("Time taken for bucket deletion: %v", elapsedTime)
 }
