@@ -1,9 +1,9 @@
 package main
 
 import (
+	"runtime"
 	"sync"
 	"time"
-	"runtime"
 
 	"github.com/pratikkumar-mohite/s3-cleaner/pkg/aws"
 	log "github.com/sirupsen/logrus"
