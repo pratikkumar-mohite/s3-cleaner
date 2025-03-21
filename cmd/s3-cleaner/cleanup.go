@@ -9,7 +9,6 @@ import (
 )
 
 func setup(profile, region, bucket string) aws.S3Client {
-
 	config := aws.AWSConnection(profile, region)
 	client := aws.S3Connection(config)
 	client.Bucket = bucket
@@ -24,32 +23,7 @@ func s3Upload(s3Client aws.S3Client) {
 	s3Client.DeleteS3BucketObjectVersion("file1.txt", object1)
 }
 
-func s3Cleanup(profile, region, bucket *string) {
-	var s3Client aws.S3Client
-	if *profile != "" && *region != "" && *bucket != "" {
-		s3Client = setup(*profile, *region, *bucket)
-	} else {
-		s3Client = setup(getFromEnv("AWS_PROFILE"), getFromEnv("AWS_REGION"), getFromEnv("AWS_DELETE_S3_BUCKET"))
-	}
-
-	if s3Client.GetS3Bucket(s3Client.Bucket) == "" {
-		log.Fatalf("Bucket %s not found\n", s3Client.Bucket)
-	}
-
-	if getFromEnv("AWS_UPLOAD_TEST_FILES") == "true" {
-		s3Upload(s3Client)
-	}
-
-	startTime := time.Now()
-
-	objects := s3Client.GetS3BucketObjects()
-
-	if len(objects) == 0 {
-		log.Infof("No objects found in bucket %s\n", s3Client.Bucket)
-		s3Client.S3BucketDelete()
-		return
-	}
-
+func concurrentCleanup(s3Client aws.S3Client, objects []aws.S3BucketObject) {
 	var wg sync.WaitGroup
 	objectChan := make(chan aws.S3BucketObject)
 
@@ -90,10 +64,37 @@ func s3Cleanup(profile, region, bucket *string) {
 
 	close(objectChan)
 	wg.Wait()
+}
+
+func s3Cleanup(profile, region, bucket, prefix *string) {
+	var s3Client aws.S3Client
+	if *profile != "" && *region != "" && *bucket != "" {
+		s3Client = setup(*profile, *region, *bucket)
+	} else {
+		s3Client = setup(getFromEnv("AWS_PROFILE"), getFromEnv("AWS_REGION"), getFromEnv("AWS_DELETE_S3_BUCKET"))
+	}
+
+	if *prefix != "" {
+		s3Client.Prefix = *prefix
+	}
+
+	if getFromEnv("AWS_UPLOAD_TEST_FILES") == "true" {
+		s3Upload(s3Client)
+	}
+
+	startTime := time.Now()
+
+	objects := s3Client.GetS3BucketObjects()
+
+	if len(objects) == 0 {
+		log.Infof("No objects found in bucket %s\n", s3Client.Bucket)
+	} else {
+		concurrentCleanup(s3Client, objects)
+	}
 
 	elapsedTime := time.Since(startTime)
 
 	s3Client.S3BucketDelete()
 
-	log.Infof("Time taken for object deletion: %v", elapsedTime)
+	log.Infof("Time taken for bucket deletion: %v", elapsedTime)
 }
