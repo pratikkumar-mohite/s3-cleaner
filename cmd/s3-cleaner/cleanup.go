@@ -3,12 +3,11 @@ package main
 import (
 	"sync"
 	"time"
+	"runtime"
 
 	"github.com/pratikkumar-mohite/s3-cleaner/pkg/aws"
 	log "github.com/sirupsen/logrus"
 )
-
-const workerCount = 10
 
 func setup(profile, region, bucket string) aws.S3Client {
 	config := aws.AWSConnection(profile, region)
@@ -26,6 +25,7 @@ func s3Upload(s3Client aws.S3Client) {
 }
 
 func concurrentCleanup(s3Client aws.S3Client, objects []aws.S3BucketObject) {
+	workerCount := runtime.NumCPU() * 2
 	var wg sync.WaitGroup
 	objectChan := make(chan aws.S3BucketObject, len(objects))
 
