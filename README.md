@@ -1,5 +1,5 @@
 # S3 Cleaner
-This project is a Go application designed to delete AWS S3 buckets.  It retrieves the list of buckets from your AWS account and performs cleanup operations on specified buckets.
+This project is a Go application designed to delete AWS S3 objects/buckets.  It retrieves the list of buckets from your AWS account and performs cleanup operations on specified bucket.
 
 ## Prerequisites
 
@@ -9,7 +9,8 @@ This project is a Go application designed to delete AWS S3 buckets.  It retrieve
 ## Features
 
 - List all S3 buckets in your AWS account.
-- Delete specified S3 buckets and its Objects.
+- Delete specified S3 bucket objects.
+- Delete S3 bucket
 - Works with Versioned and Non-Versioned buckets.
 - Utilize GO concurrency for delete operations.
 
@@ -64,18 +65,25 @@ This will upload `file1.txt` and `file2.txt` to S3 bucket and then perform S3 ob
     ```sh
     aws configure --profile <your-aws-profile>
     ```
-2. Run the s3-cleaner cli
+2. Run the s3-cleaner cli (Following parameters are mandatory)
     ```sh
     s3-cleaner -p pratikkumar-mohite-aws -r us-east-1 -b pratikkumar-mohite-test
     ```
 3. Alternatively, Setup Environment variables and then run s3-cleaner cli
     ```sh
     export AWS_REGION=us-east-1
-    export AWS_DELETE_S3_BUCKET=pratikkumar-mohite-test
+    export AWS_S3_BUCKET=pratikkumar-mohite-test
     export AWS_PROFILE=pratikkumar-mohite-aws
-
     $ s3-cleaner
     ```
+4. Optional
+    a. Use Prefix, In case you want to delete specific folder
+    - Use CLI - `s3-cleaner -p pratikkumar-mohite-aws -r us-east-1 -b pratikkumar-mohite-test -f /prefix/path`
+    - Use ENV variable - `export AWS_S3_PREFIX=/prefix/path`
+    b. Use BucketDelete - If you want to delete the bucket
+    - Use CLI - `s3-cleaner -p pratikkumar-mohite-aws -r us-east-1 -b pratikkumar-mohite-test --bucket-delete`
+    - Use ENV variable - `export AWS_S3_BUCKET_DELETE=true`
+
 ![Usage](docs/gif/s3-cleaner-usage.gif)
 
 ## Note
