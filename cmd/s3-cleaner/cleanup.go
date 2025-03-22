@@ -1,6 +1,7 @@
 package main
 
 import (
+	"runtime"
 	"sync"
 	"time"
 
@@ -24,41 +25,43 @@ func s3Upload(s3Client aws.S3Client) {
 }
 
 func concurrentCleanup(s3Client aws.S3Client, objects []aws.S3BucketObject) {
+	workerCount := runtime.NumCPU() * 2
 	var wg sync.WaitGroup
-	objectChan := make(chan aws.S3BucketObject)
+	objectChan := make(chan aws.S3BucketObject, len(objects))
 
-	go func() {
-		for object := range objectChan {
-			if object.ObjectName != "" {
-				if object.ObjectDeleteMarker != "" {
-					s3Client.DeleteS3BucketObjectVersion(object.ObjectName, object.ObjectDeleteMarker)
-				}
-
-				var versionWG sync.WaitGroup
-
-				if len(object.ObjectVersion) == 0 {
-					versionWG.Add(1)
-					go func(object_name string) {
-						defer versionWG.Done()
-						s3Client.DeleteS3BucketObject(object_name)
-					}(object.ObjectName)
-				}
-
-				for _, version := range object.ObjectVersion {
-					versionWG.Add(1)
-					go func(version string) {
-						defer versionWG.Done()
-						s3Client.DeleteS3BucketObjectVersion(object.ObjectName, version)
-					}(version)
-				}
-				versionWG.Wait()
-			}
-			wg.Done()
-		}
-	}()
-
-	for _, object := range objects {
+	for i := 0; i < workerCount; i++ {
 		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for object := range objectChan {
+				if object.ObjectName != "" {
+					if object.ObjectDeleteMarker != "" {
+						s3Client.DeleteS3BucketObjectVersion(object.ObjectName, object.ObjectDeleteMarker)
+					}
+
+					var versionWG sync.WaitGroup
+
+					if len(object.ObjectVersion) == 0 {
+						versionWG.Add(1)
+						go func(object_name string) {
+							defer versionWG.Done()
+							s3Client.DeleteS3BucketObject(object_name)
+						}(object.ObjectName)
+					}
+
+					for _, version := range object.ObjectVersion {
+						versionWG.Add(1)
+						go func(version string) {
+							defer versionWG.Done()
+							s3Client.DeleteS3BucketObjectVersion(object.ObjectName, version)
+						}(version)
+					}
+					versionWG.Wait()
+				}
+			}
+		}()
+	}
+	for _, object := range objects {
 		objectChan <- object
 	}
 

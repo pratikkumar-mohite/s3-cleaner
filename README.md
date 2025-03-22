@@ -9,7 +9,7 @@ This project is a Go application designed to delete AWS S3 objects/buckets.  It 
 ## Features
 
 - List all S3 buckets in your AWS account.
-- Delete specified S3 bucket objects.
+- Delete S3 bucket objects with or without prefix.
 - Delete S3 bucket
 - Works with Versioned and Non-Versioned buckets.
 - Utilize GO concurrency for delete operations.
@@ -69,7 +69,7 @@ This will upload `file1.txt` and `file2.txt` to S3 bucket and then perform S3 ob
     ```sh
     s3-cleaner -p pratikkumar-mohite-aws -r us-east-1 -b pratikkumar-mohite-test
     ```
-3. Alternatively, Setup Environment variables and then run s3-cleaner cli
+3. Alternatively, Setup Environment variables and then run s3-cleaner cli (Following env variables are mandatory)
     ```sh
     export AWS_REGION=us-east-1
     export AWS_S3_BUCKET=pratikkumar-mohite-test
@@ -91,7 +91,7 @@ This will upload `file1.txt` and `file2.txt` to S3 bucket and then perform S3 ob
 ```sh
 FATA[0002] Unable to list objects, %!v(MISSING)operation error S3: ListObjectsV2, https response error StatusCode: 301, RequestID: FJFNV6SB70432CZT, HostID: testB9w==, api error PermanentRedirect: The bucket you are attempting to access must be addressed using the specified endpoint. Please send all future requests to this endpoint.
 ```
-2. Known Issue, the ListObjectsV2Input for listing the s3 object supports only 1,000 objects to list and with s3-cleaner I've increased it to 10,000. In case the cli failed with following message, *RETRY*!!
+2. Known Issue, the ListObjectsV2Input for listing the s3 object supports only 1,000 objects to list and with s3-cleaner I've increased it to 1,00,000. In case the cli failed with following message, *RETRY*!!
 ```sh
 FATA[0296] Unable to delete bucket, %!v(MISSING)operation error S3: DeleteBucket, https response error StatusCode: 409, RequestID: 1S2TQ1F50737F6VA, HostID: zUcZVNGhxQtg5EepWlToEuKAEQwsvc7ZQnQn7y7DmhaqOJBiF5EdlJCHGbKxt1mASDD/yukxc+8hLU8cGae4PQyZWICH/nDOCIkKX2aNZ8k=, api error BucketNotEmpty: The bucket you tried to delete is not empty
 ```
