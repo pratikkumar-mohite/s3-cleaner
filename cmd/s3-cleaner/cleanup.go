@@ -62,7 +62,6 @@ func concurrentCleanup(s3Client aws.S3Client, objects []aws.S3BucketObject) {
 		}()
 	}
 	for _, object := range objects {
-		wg.Add(1)
 		objectChan <- object
 	}
 
