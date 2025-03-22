@@ -9,7 +9,7 @@ This project is a Go application designed to delete AWS S3 objects/buckets.  It 
 ## Features
 
 - List all S3 buckets in your AWS account.
-- Delete specified S3 bucket objects.
+- Delete S3 bucket objects with or without prefix.
 - Delete S3 bucket
 - Works with Versioned and Non-Versioned buckets.
 - Utilize GO concurrency for delete operations.
