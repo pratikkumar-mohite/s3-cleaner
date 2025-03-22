@@ -69,7 +69,7 @@ This will upload `file1.txt` and `file2.txt` to S3 bucket and then perform S3 ob
     ```sh
     s3-cleaner -p pratikkumar-mohite-aws -r us-east-1 -b pratikkumar-mohite-test
     ```
-3. Alternatively, Setup Environment variables and then run s3-cleaner cli
+3. Alternatively, Setup Environment variables and then run s3-cleaner cli (Following env variables are mandatory)
     ```sh
     export AWS_REGION=us-east-1
     export AWS_S3_BUCKET=pratikkumar-mohite-test
