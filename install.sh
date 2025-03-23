@@ -3,6 +3,14 @@ OS=$(uname -s | tr '[:upper:]' '[:lower:]')
 ARCH=$(uname -m)
 CLI="s3-cleaner"
 
+if [[ "$OS" == "DARWIN" ]]; then
+    OS="Darwin"
+elif [[ "$OS" == "LINUX" ]]; then
+    OS="Linux"
+elif [[ "$OS" == "WINDOWS_NT" ]]; then
+    OS="Windows"
+fi
+
 if [ "$ARCH" = "x86_64" ]; then
     ARCH="amd64"
 elif [ "$ARCH" = "arm64" ]; then
