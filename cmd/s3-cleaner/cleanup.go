@@ -69,7 +69,7 @@ func concurrentCleanup(s3Client aws.S3Client, objects []aws.S3BucketObject) {
 	wg.Wait()
 }
 
-func s3Cleanup(profile, region, bucket, prefix *string, bucketDelete bool) {
+func s3Cleanup(profile, region, bucket, prefix *string, bucketDelete, listObjects bool) {
 	var s3Client aws.S3Client
 	if *profile != "" && *region != "" && *bucket != "" {
 		s3Client = setup(*profile, *region, *bucket)
@@ -91,6 +91,11 @@ func s3Cleanup(profile, region, bucket, prefix *string, bucketDelete bool) {
 
 	if len(objects) == 0 {
 		log.Infof("No objects found in bucket %s\n", s3Client.Bucket)
+	} else if listObjects || getFromEnv("AWS_S3_LIST_OBJECTS") == "true" {
+		for _, object := range objects {
+			log.Infof("Object Name: %s, Object Version: %v, Object Delete Marker: %s\n", object.ObjectName, object.ObjectVersion, object.ObjectDeleteMarker)
+		}
+		log.Infof("%d objects found in bucket %s\n", len(objects), s3Client.Bucket)
 	} else {
 		concurrentCleanup(s3Client, objects)
 	}
