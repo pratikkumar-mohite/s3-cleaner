@@ -69,7 +69,7 @@ func concurrentCleanup(s3Client aws.S3Client, objects []aws.S3BucketObject) {
 	wg.Wait()
 }
 
-func s3Cleanup(profile, region, bucket, prefix *string, bucketDelete bool) {
+func s3Cleanup(profile, region, bucket, prefix *string, deleteBucket, listObjects bool) {
 	var s3Client aws.S3Client
 	if *profile != "" && *region != "" && *bucket != "" {
 		s3Client = setup(*profile, *region, *bucket)
@@ -79,6 +79,10 @@ func s3Cleanup(profile, region, bucket, prefix *string, bucketDelete bool) {
 	} else {
 		s3Client = setup(getFromEnv("AWS_PROFILE"), getFromEnv("AWS_REGION"), getFromEnv("AWS_S3_BUCKET"))
 		s3Client.Prefix = getFromEnv("AWS_S3_PREFIX")
+	}
+
+	if getFromEnv("AWS_S3_LIST_OBJECTS") == "true" && getFromEnv("AWS_S3_DELETE_BUCKET") == "true" {
+		log.Fatalf("Cannot list objects and delete bucket at the same time, please unset one of the environment variable AWS_S3_LIST_OBJECTS or AWS_S3_DELETE_BUCKET")
 	}
 
 	if getFromEnv("AWS_UPLOAD_TEST_FILES") == "true" {
@@ -91,13 +95,18 @@ func s3Cleanup(profile, region, bucket, prefix *string, bucketDelete bool) {
 
 	if len(objects) == 0 {
 		log.Infof("No objects found in bucket %s\n", s3Client.Bucket)
+	} else if listObjects || getFromEnv("AWS_S3_LIST_OBJECTS") == "true" {
+		for _, object := range objects {
+			log.Infof("Object Name: %s, Object Version: %v, Object Delete Marker: %s\n", object.ObjectName, object.ObjectVersion, object.ObjectDeleteMarker)
+		}
+		log.Infof("%d objects found in bucket %s\n", len(objects), s3Client.Bucket)
 	} else {
 		concurrentCleanup(s3Client, objects)
 	}
 
 	elapsedTime := time.Since(startTime)
 
-	if bucketDelete || getFromEnv("AWS_S3_BUCKET_DELETE") == "true" {
+	if deleteBucket || getFromEnv("AWS_S3_DELETE_BUCKET") == "true" {
 		s3Client.S3BucketDelete()
 	}
 
