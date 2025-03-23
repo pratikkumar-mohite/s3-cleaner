@@ -81,6 +81,10 @@ func s3Cleanup(profile, region, bucket, prefix *string, deleteBucket, listObject
 		s3Client.Prefix = getFromEnv("AWS_S3_PREFIX")
 	}
 
+	if getFromEnv("AWS_S3_LIST_OBJECTS") == "true" && getFromEnv("AWS_S3_DELETE_BUCKET") == "true" {
+		log.Fatalf("Cannot list objects and delete bucket at the same time, please unset one of the environment variable AWS_S3_LIST_OBJECTS or AWS_S3_DELETE_BUCKET")
+	}
+
 	if getFromEnv("AWS_UPLOAD_TEST_FILES") == "true" {
 		s3Upload(s3Client)
 	}
