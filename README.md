@@ -14,6 +14,47 @@ This project is a Go application designed to delete AWS S3 objects/buckets.  It 
 - Works with Versioned and Non-Versioned buckets.
 - Utilize GO concurrency for delete operations.
 
+## Usage
+
+1. Ensure you have AWS credentials configured. You can set them up using the AWS CLI (ignore if already set):
+    ```sh
+    aws configure --profile <your-aws-profile>
+    ```
+2. Run the s3-cleaner cli (Following parameters are mandatory)
+    ```sh
+    s3-cleaner -p pratikkumar-mohite-aws -r us-east-1 -b pratikkumar-mohite-test
+    ```
+3. Alternatively, Setup Environment variables and then run s3-cleaner cli (Following env variables are mandatory)
+    ```sh
+    export AWS_REGION=us-east-1
+    export AWS_S3_BUCKET=pratikkumar-mohite-test
+    export AWS_PROFILE=pratikkumar-mohite-aws
+    $ s3-cleaner
+    ```
+4. Optional Flags
+    a. Use Prefix, In case you want to delete specific folder
+    - Use CLI - `s3-cleaner -p pratikkumar-mohite-aws -r us-east-1 -b pratikkumar-mohite-test -f /prefix/path`
+    - Use ENV variable - `export AWS_S3_PREFIX=/prefix/path`
+    b. Use DeleteBucket - If you want to delete the bucket
+    - Use CLI - `s3-cleaner -p pratikkumar-mohite-aws -r us-east-1 -b pratikkumar-mohite-test --delete-bucket`
+    - Use ENV variable - `export AWS_S3_DELETE_BUCKET=true`
+    c. Use ListObjects - If you want to list the bucket objects
+    - Use CLI - `s3-cleaner -p pratikkumar-mohite-aws -r us-east-1 -b pratikkumar-mohite-test --list-objects`
+    - Use ENV variable - `export AWS_S3_LIST_OBJECTS=true`
+
+![Usage](docs/gif/s3-cleaner-usage.gif)
+
+## Note
+1. In case you get following issue, there might problem with bucket region.
+```sh
+FATA[0002] Unable to list objects, %!v(MISSING)operation error S3: ListObjectsV2, https response error StatusCode: 301, RequestID: FJFNV6SB70432CZT, HostID: testB9w==, api error PermanentRedirect: The bucket you are attempting to access must be addressed using the specified endpoint. Please send all future requests to this endpoint.
+```
+2. Known Issue, the ListObjectsV2Input for listing the s3 object supports only 1,000 objects to list and with s3-cleaner I've increased it to 1,00,000. In case the cli failed with following message, *RETRY*!!
+```sh
+FATA[0296] Unable to delete bucket, %!v(MISSING)operation error S3: DeleteBucket, https response error StatusCode: 409, RequestID: 1S2TQ1F50737F6VA, HostID: zUcZVNGhxQtg5EepWlToEuKAEQwsvc7ZQnQn7y7DmhaqOJBiF5EdlJCHGbKxt1mASDD/yukxc+8hLU8cGae4PQyZWICH/nDOCIkKX2aNZ8k=, api error BucketNotEmpty: The bucket you tried to delete is not empty
+```
+3. Flags `AWS_S3_DELETE_BUCKET` and `AWS_S3_LIST_OBJECTS` are mutually exclusive, with cli its `--delete-bucket` and `--list-objects`
+
 ## Build
 
 1. Clone the repository:
@@ -57,48 +98,6 @@ There is an alternative to test the application with actual AWS S3 bucket with s
     make run
     ```
 This will upload `file1.txt` and `file2.txt` to S3 bucket and then perform S3 object + bucket cleanup.
-
-
-## Usage
-
-1. Ensure you have AWS credentials configured. You can set them up using the AWS CLI (ignore if already set):
-    ```sh
-    aws configure --profile <your-aws-profile>
-    ```
-2. Run the s3-cleaner cli (Following parameters are mandatory)
-    ```sh
-    s3-cleaner -p pratikkumar-mohite-aws -r us-east-1 -b pratikkumar-mohite-test
-    ```
-3. Alternatively, Setup Environment variables and then run s3-cleaner cli (Following env variables are mandatory)
-    ```sh
-    export AWS_REGION=us-east-1
-    export AWS_S3_BUCKET=pratikkumar-mohite-test
-    export AWS_PROFILE=pratikkumar-mohite-aws
-    $ s3-cleaner
-    ```
-4. Optional Flags
-    a. Use Prefix, In case you want to delete specific folder
-    - Use CLI - `s3-cleaner -p pratikkumar-mohite-aws -r us-east-1 -b pratikkumar-mohite-test -f /prefix/path`
-    - Use ENV variable - `export AWS_S3_PREFIX=/prefix/path`
-    b. Use DeleteBucket - If you want to delete the bucket
-    - Use CLI - `s3-cleaner -p pratikkumar-mohite-aws -r us-east-1 -b pratikkumar-mohite-test --delete-bucket`
-    - Use ENV variable - `export AWS_S3_DELETE_BUCKET=true`
-    c. Use ListObjects - If you want to list the bucket objects
-    - Use CLI - `s3-cleaner -p pratikkumar-mohite-aws -r us-east-1 -b pratikkumar-mohite-test --list-objects`
-    - Use ENV variable - `export AWS_S3_LIST_OBJECTS=true`
-
-![Usage](docs/gif/s3-cleaner-usage.gif)
-
-## Note
-1. In case you get following issue, there might problem with bucket region.
-```sh
-FATA[0002] Unable to list objects, %!v(MISSING)operation error S3: ListObjectsV2, https response error StatusCode: 301, RequestID: FJFNV6SB70432CZT, HostID: testB9w==, api error PermanentRedirect: The bucket you are attempting to access must be addressed using the specified endpoint. Please send all future requests to this endpoint.
-```
-2. Known Issue, the ListObjectsV2Input for listing the s3 object supports only 1,000 objects to list and with s3-cleaner I've increased it to 1,00,000. In case the cli failed with following message, *RETRY*!!
-```sh
-FATA[0296] Unable to delete bucket, %!v(MISSING)operation error S3: DeleteBucket, https response error StatusCode: 409, RequestID: 1S2TQ1F50737F6VA, HostID: zUcZVNGhxQtg5EepWlToEuKAEQwsvc7ZQnQn7y7DmhaqOJBiF5EdlJCHGbKxt1mASDD/yukxc+8hLU8cGae4PQyZWICH/nDOCIkKX2aNZ8k=, api error BucketNotEmpty: The bucket you tried to delete is not empty
-```
-3. Flags `AWS_S3_DELETE_BUCKET` and `AWS_S3_LIST_OBJECTS` are mutually exclusive, with cli its `--delete-bucket` and `--list-objects`
 
 ## Contributing
 
