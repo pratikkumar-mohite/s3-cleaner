@@ -1,5 +1,5 @@
 # S3 Cleaner
-This project is a Go application designed to delete AWS S3 objects/buckets.  It retrieves the list of buckets from your AWS account and performs cleanup operations on specified bucket.
+This project is a Go application designed to delete AWS S3 objects/buckets.  It retrieves the list of buckets from your AWS account and performs list or cleanup operations on specified bucket.
 
 ## Prerequisites
 
@@ -8,7 +8,7 @@ This project is a Go application designed to delete AWS S3 objects/buckets.  It 
 
 ## Features
 
-- List all S3 buckets in your AWS account.
+- List objects of s3 bucket.
 - Delete S3 bucket objects with or without prefix.
 - Delete S3 bucket
 - Works with Versioned and Non-Versioned buckets.
@@ -76,7 +76,7 @@ This will upload `file1.txt` and `file2.txt` to S3 bucket and then perform S3 ob
     export AWS_PROFILE=pratikkumar-mohite-aws
     $ s3-cleaner
     ```
-4. Optional
+4. Optional Flags
     a. Use Prefix, In case you want to delete specific folder
     - Use CLI - `s3-cleaner -p pratikkumar-mohite-aws -r us-east-1 -b pratikkumar-mohite-test -f /prefix/path`
     - Use ENV variable - `export AWS_S3_PREFIX=/prefix/path`
