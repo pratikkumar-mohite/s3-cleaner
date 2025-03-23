@@ -80,9 +80,12 @@ This will upload `file1.txt` and `file2.txt` to S3 bucket and then perform S3 ob
     a. Use Prefix, In case you want to delete specific folder
     - Use CLI - `s3-cleaner -p pratikkumar-mohite-aws -r us-east-1 -b pratikkumar-mohite-test -f /prefix/path`
     - Use ENV variable - `export AWS_S3_PREFIX=/prefix/path`
-    b. Use BucketDelete - If you want to delete the bucket
+    b. Use DeleteBucket - If you want to delete the bucket
     - Use CLI - `s3-cleaner -p pratikkumar-mohite-aws -r us-east-1 -b pratikkumar-mohite-test --delete-bucket`
     - Use ENV variable - `export AWS_S3_DELETE_BUCKET=true`
+    c. Use ListObjects - If you want to list the bucket objects
+    - Use CLI - `s3-cleaner -p pratikkumar-mohite-aws -r us-east-1 -b pratikkumar-mohite-test --list-objects`
+    - Use ENV variable - `export AWS_S3_LIST_OBJECTS=true`
 
 ![Usage](docs/gif/s3-cleaner-usage.gif)
 
@@ -95,6 +98,7 @@ FATA[0002] Unable to list objects, %!v(MISSING)operation error S3: ListObjectsV2
 ```sh
 FATA[0296] Unable to delete bucket, %!v(MISSING)operation error S3: DeleteBucket, https response error StatusCode: 409, RequestID: 1S2TQ1F50737F6VA, HostID: zUcZVNGhxQtg5EepWlToEuKAEQwsvc7ZQnQn7y7DmhaqOJBiF5EdlJCHGbKxt1mASDD/yukxc+8hLU8cGae4PQyZWICH/nDOCIkKX2aNZ8k=, api error BucketNotEmpty: The bucket you tried to delete is not empty
 ```
+3. Flags `AWS_S3_DELETE_BUCKET` and `AWS_S3_LIST_OBJECTS` are mutually exclusive, with cli its `--delete-bucket` and `--list-objects`
 
 ## Contributing
 
