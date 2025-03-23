@@ -14,10 +14,19 @@ fi
 
 URL="https://github.com/pratikkumar-mohite/$CLI/releases/latest/download/$CLI-${OS}-${ARCH}.tar.gz"
 
-echo "Downloading from $URL..."
-curl -L $URL -o $CLI.tar.gz
-tar -xzf $CLI.tar.gz
-chmod +x $CLI
-sudo mv $CLI /usr/local/bin/$CLI
-rm -rf $CLI.tar.gz
-echo "$CLI installed successfully!"
+echo "Downloading ${CLI} from $URL..."
+if curl -L "$URL" -o "${CLI}.tar.gz"; then
+    echo "Download successful."
+else
+    echo "Error: Failed to download ${CLI}." >&2
+    exit 1
+fi
+
+# Extract and install
+tar -xzf "${CLI}.tar.gz" || { echo "Error: Failed to extract ${CLI}." >&2; exit 1; }
+chmod +x "${CLI}" || { echo "Error: Failed to set executable permission." >&2; exit 1; }
+sudo mv "${CLI}" /usr/local/bin/"${CLI}" || { echo "Error: Failed to move ${CLI} to /usr/local/bin." >&2; exit 1; }
+
+# Cleanup
+sudo rm -rf "${CLI}.tar.gz"
+echo "${CLI} installed successfully!"
