@@ -14,6 +14,12 @@ This project is a Go application designed to delete AWS S3 objects/buckets.  It 
 - Works with Versioned and Non-Versioned buckets.
 - Utilize GO concurrency for delete operations.
 
+## Installation
+- Perform following command to download `s3-cleaner` cli
+```sh
+curl -fsSL https://raw.githubusercontent.com/pratikkumar-mohite/s3-cleaner/master/install.sh | sh
+```
+
 ## Usage
 
 1. Ensure you have AWS credentials configured. You can set them up using the AWS CLI (ignore if already set):
