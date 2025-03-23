@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/spf13/cobra"
+	cleaner "github.com/pratikkumar-mohite/s3-cleaner/pkg/cleaner"
 )
 
 func main() {
@@ -14,7 +15,7 @@ func main() {
 		Run: func(cmd *cobra.Command, args []string) {
 			deleteBucket, _ = cmd.Flags().GetBool("delete-bucket")
 			listObjects, _ = cmd.Flags().GetBool("list-objects")
-			s3Cleanup(&profile, &region, &bucket, &prefix, deleteBucket, listObjects)
+			cleaner.S3Cleanup(&profile, &region, &bucket, &prefix, deleteBucket, listObjects)
 		},
 	}
 
