@@ -29,3 +29,6 @@ go.work.sum
 
 # binary file
 /s3-cleaner
+
+# Added by goreleaser init:
+dist/

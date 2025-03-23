@@ -1,4 +1,4 @@
-package main
+package cleaner
 
 import (
 	"runtime"
@@ -69,7 +69,7 @@ func concurrentCleanup(s3Client aws.S3Client, objects []aws.S3BucketObject) {
 	wg.Wait()
 }
 
-func s3Cleanup(profile, region, bucket, prefix *string, deleteBucket, listObjects bool) {
+func S3Cleanup(profile, region, bucket, prefix *string, deleteBucket, listObjects bool) {
 	var s3Client aws.S3Client
 	if *profile != "" && *region != "" && *bucket != "" {
 		s3Client = setup(*profile, *region, *bucket)
